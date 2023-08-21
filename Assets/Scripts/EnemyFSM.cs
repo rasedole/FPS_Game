@@ -1,20 +1,31 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-//¸ñÀû1 : ¿¡³×¹Ì¸¦ FSM ´ÙÀÌ¾î±×·¥¿¡ µû¶ó µ¿ÀÛ½ÃÅ°°í ½Í´Ù.
-//¼Ó¼º1 : ¿¡³×¹ÌÀÇ »óÅÂ, Ä³¸¯ÅÍÄÁÆ®·Ñ·¯, ÀÌµ¿¼Óµµ
-//¼ø¼­1-1. ¿¡³×¹ÌÀÇ »óÅÂ¿¡ µû¶ó Á¤ÇØÁø Çàµ¿À» ÇÑ´Ù.
-//¼ø¼­1-2. ÀÌµ¿ »óÅÂÀÏ ¶§´Â ÇÃ·¹ÀÌ¾î¸¦ µû¶ó°£´Ù.
+//ëª©ì 1 : ì—ë„¤ë¯¸ë¥¼ FSM ë‹¤ì´ì–´ê·¸ë¨ì— ë”°ë¼ ë™ì‘ì‹œí‚¤ê³  ì‹¶ë‹¤.
+//ì†ì„±1 : ì—ë„¤ë¯¸ì˜ ìƒíƒœ, ìºë¦­í„°ì»¨íŠ¸ë¡¤ëŸ¬, ì´ë™ì†ë„, í”Œë ˆì´ì–´ ê²Œì„ì˜¤ë¸Œì íŠ¸, ê³µê²©ë ¥, ì´ˆê¸° ìœ„ì¹˜, HP
+//ìˆœì„œ1-1. ì—ë„¤ë¯¸ì˜ ìƒíƒœì— ë”°ë¼ ì •í•´ì§„ í–‰ë™ì„ í•œë‹¤.
+//ìˆœì„œ1-2. ì´ë™ ìƒíƒœì¼ ë•ŒëŠ” í”Œë ˆì´ì–´ë¥¼ ë”°ë¼ê°„ë‹¤.
+//ìˆœì„œ1-3. ê³µê²© ìƒíƒœì¼ ë•ŒëŠ” í”Œë ˆì´ì–´ë¥¼ ê³µê²©í•œë‹¤.
+//ìˆœì„œ1-4. ë³µê·€ ìƒíƒœì¼ ë•ŒëŠ” ì´ˆê¸° ìœ„ì¹˜ë¡œ ì´ë™í•œë‹¤.
+//ìˆœì„œ1-5. í”¼ê²© ìƒíƒœì¼ ë•ŒëŠ” HPë¥¼ ê°ì†Œì‹œí‚¨ë‹¤.
+//ìˆœì„œ1-6. ì‚¬ë§ ìƒíƒœì¼ ë•ŒëŠ” ì‚­ì œí•œë‹¤.
 
-//¸ñÀû2 : ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸®¿¡ µû¶ó ¿¡³×¹ÌÀÇ »óÅÂ¸¦ º¯°æÇÑ´Ù.
-//¼Ó¼º2 : ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸®, ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡
-//¼ø¼­2-1. ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸®¸¦ ÃøÁ¤ÇÑ´Ù.
-//¼ø¼­2-2. ´ë±â »óÅÂÀÏ ¶§ °Å¸®°¡ °¡±î¿öÁö¸é ÀÌµ¿ »óÅÂ·Î º¯°æÇÑ´Ù.
-//¼ø¼­2-3. ÀÌµ¿ »óÅÂÀÏ ¶§ °Å¸®°¡ ¸Ö¾îÁö¸é ´ë±â »óÅÂ·Î º¯°æÇÑ´Ù.
-//¼ø¼­2-4. ÀÌµ¿ »óÅÂÀÏ ¶§ °Å¸®°¡ °¡±î¿öÁö¸é °ø°İ »óÅÂ·Î º¯°æÇÑ´Ù.
-//¼ø¼­2-5. °ø°İ »óÅÂÀÏ ¶§ °Å¸®°¡ ¸Ö¾îÁö¸é ÀÌµ¿ »óÅÂ·Î º¯°æÇÑ´Ù.
+//ëª©ì 2 : í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬ì— ë”°ë¼ ì—ë„¤ë¯¸ì˜ ìƒíƒœë¥¼ ë³€ê²½í•œë‹¤.
+//ì†ì„±2 : í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬, í”Œë ˆì´ì–´ì˜ ìœ„ì¹˜, ì´ë™ê±°ë¦¬, ê³µê²©ê±°ë¦¬, ê³µê²©ì†ë„, í˜„ì¬ì‹œê°„, ë³µê·€ê±°ë¦¬
+//ìˆœì„œ2-1. í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬ë¥¼ ì¸¡ì •í•œë‹¤.
+//ìˆœì„œ2-2. ëŒ€ê¸° ìƒíƒœì¼ ë•Œ ê±°ë¦¬ê°€ ê°€ê¹Œì›Œì§€ë©´ ì´ë™ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-3. ì´ë™ ìƒíƒœì¼ ë•Œ ê±°ë¦¬ê°€ ë©€ì–´ì§€ë©´ ëŒ€ê¸° ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-4. ì´ë™ ìƒíƒœì¼ ë•Œ ê±°ë¦¬ê°€ ê°€ê¹Œì›Œì§€ë©´ ê³µê²© ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-5. ê³µê²© ìƒíƒœì¼ ë•Œ ê±°ë¦¬ê°€ ë©€ì–´ì§€ë©´ ì´ë™ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-6. ì´ë™ ìƒíƒœì¼ ë•Œ ì´ˆê¸° ìœ„ì¹˜ì—ì„œ ë©€ì–´ì§€ë©´ ë³µê·€ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-7. ë³µêµ¬ ìƒíƒœì¼ ë•Œ ì´ˆê¸° ìœ„ì¹˜ë¡œ ì´ë™í•˜ë©´ ëŒ€ê¸° ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-8. ê³µê²©ì„ ë°›ìœ¼ë©´ í˜„ì¬ ìƒíƒœì™€ ìƒê´€ì—†ì´ í”¼ê²© ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-9. í”¼ê²© ìƒíƒœì¼ ë•Œ ë°ë¯¸ì§€ ì²˜ë¦¬ë¥¼ í•˜ê³  ì²´ë ¥ì´ 0ë³´ë‹¤ í¬ë‹¤ë©´ ì´ë™ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-10. í”¼ê²© ìƒíƒœì¼ ë•Œ ë°ë¯¸ì§€ ì²˜ë¦¬ë¥¼ í•˜ê³  ì²´ë ¥ì´ 0ë³´ë‹¤ ì‘ê±°ë‚˜ ê°™ë‹¤ë©´ ì‚¬ë§ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+
 
 public class EnemyFSM : MonoBehaviour
 {
@@ -28,15 +39,23 @@ public class EnemyFSM : MonoBehaviour
         Die
     }
 
-    //¼Ó¼º1 : ¿¡³×¹ÌÀÇ »óÅÂ, Ä³¸¯ÅÍÄÁÆ®·Ñ·¯, ÀÌµ¿¼Óµµ
+    //ì†ì„±1 : ì—ë„¤ë¯¸ì˜ ìƒíƒœ, ìºë¦­í„°ì»¨íŠ¸ë¡¤ëŸ¬, ì´ë™ì†ë„, í”Œë ˆì´ì–´ ê²Œì„ì˜¤ë¸Œì íŠ¸, ê³µê²©ë ¥, ì´ˆê¸° ìœ„ì¹˜, HP
     private EnemyState enemyState;
     private CharacterController enemyController;
-    public float speed = 5f;
+    public float speed = 7.5f;
+    private GameObject player;
+    public int attackPower = 2;
+    private Vector3 originPosition;
+    public int healthPoint = 3;
 
-    //¼Ó¼º2 : ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸®, ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡
-    public float distanceToPlayer;
+    //ì†ì„±2 : í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬, í”Œë ˆì´ì–´ì˜ ìœ„ì¹˜, ì´ë™ê±°ë¦¬, ê³µê²©ê±°ë¦¬, ê³µê²©ì†ë„, í˜„ì¬ì‹œê°„, ë³µê·€ê±°ë¦¬
+    private float distanceToPlayer;
     private Transform playerTransform;
-
+    public float moveDistance = 10f;
+    public float attackDistance = 2f;
+    public float attackDelay = 0.5f;
+    private float currentTime = 0;
+    public float returnDistance = 30f;
 
     // Start is called before the first frame update
     void Start()
@@ -44,15 +63,17 @@ public class EnemyFSM : MonoBehaviour
         enemyState = EnemyState.Idle;
         enemyController = GetComponent<CharacterController>();
         playerTransform = GameObject.Find("Player").transform;
+        player = GameObject.Find("Player");
+        originPosition = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //¼ø¼­2-1. ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸®¸¦ ÃøÁ¤ÇÑ´Ù.
+        //ìˆœì„œ2-1. í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬ë¥¼ ì¸¡ì •í•œë‹¤.
         distanceToPlayer = (playerTransform.position - transform.position).magnitude;
 
-        //¼ø¼­1-1. ¿¡³×¹ÌÀÇ »óÅÂ¿¡ µû¶ó Á¤ÇØÁø Çàµ¿À» ÇÑ´Ù.
+        //ìˆœì„œ1-1. ì—ë„¤ë¯¸ì˜ ìƒíƒœì— ë”°ë¼ ì •í•´ì§„ í–‰ë™ì„ í•œë‹¤.
         switch (enemyState)
         {
             case EnemyState.Idle:
@@ -77,8 +98,8 @@ public class EnemyFSM : MonoBehaviour
     }
     private void Idle()
     {
-        //¼ø¼­2-2. ´ë±â »óÅÂÀÏ ¶§ °Å¸®°¡ °¡±î¿öÁö¸é ÀÌµ¿ »óÅÂ·Î º¯°æÇÑ´Ù.
-        if (distanceToPlayer < 10f)
+        //ìˆœì„œ2-2. ëŒ€ê¸° ìƒíƒœì¼ ë•Œ ê±°ë¦¬ê°€ ê°€ê¹Œì›Œì§€ë©´ ì´ë™ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+        if (distanceToPlayer < moveDistance)
         {
             enemyState = EnemyState.Move;
             print("Idle -> Move");
@@ -87,47 +108,126 @@ public class EnemyFSM : MonoBehaviour
 
     private void Move()
     {
-        //¼ø¼­1-2. ÀÌµ¿ »óÅÂÀÏ ¶§´Â ÇÃ·¹ÀÌ¾î¸¦ µû¶ó°£´Ù.
+        //ìˆœì„œ1-2. ì´ë™ ìƒíƒœì¼ ë•ŒëŠ” í”Œë ˆì´ì–´ë¥¼ ë”°ë¼ê°„ë‹¤.
         Vector3 dir = (playerTransform.position - transform.position).normalized;
         enemyController.Move(speed * Time.deltaTime * dir);
 
-        //¼ø¼­2-3. ÀÌµ¿ »óÅÂÀÏ ¶§ °Å¸®°¡ ¸Ö¾îÁö¸é ´ë±â »óÅÂ·Î º¯°æÇÑ´Ù.
-        if (distanceToPlayer > 15f)
+        //ìˆœì„œ2-6. ì´ë™ ìƒíƒœì¼ ë•Œ ì´ˆê¸° ìœ„ì¹˜ì—ì„œ ë©€ì–´ì§€ë©´ ë³µê·€ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+        float distanceToOrigin = (originPosition - transform.position).magnitude;
+        if(distanceToOrigin > returnDistance)
         {
-            enemyState = EnemyState.Idle;
-            print("Move -> Idle");
+            enemyState = EnemyState.Return;
+            print("Move -> Return");
         }
-
-        //¼ø¼­2-4. ÀÌµ¿ »óÅÂÀÏ ¶§ °Å¸®°¡ °¡±î¿öÁö¸é °ø°İ »óÅÂ·Î º¯°æÇÑ´Ù.
-        if(distanceToPlayer < 1f)
+        else
         {
-            enemyState = EnemyState.Attack;
-            print("Move -> Attack");
+            //ìˆœì„œ2-3. ì´ë™ ìƒíƒœì¼ ë•Œ ê±°ë¦¬ê°€ ë©€ì–´ì§€ë©´ ëŒ€ê¸° ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+            if (distanceToPlayer > (moveDistance + 2))
+            {
+                enemyState = EnemyState.Idle;
+                print("Move -> Idle");
+            }
+
+            //ìˆœì„œ2-4. ì´ë™ ìƒíƒœì¼ ë•Œ ê±°ë¦¬ê°€ ê°€ê¹Œì›Œì§€ë©´ ê³µê²© ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+            if (distanceToPlayer < attackDistance)
+            {
+                enemyState = EnemyState.Attack;
+                print("Move -> Attack");
+                currentTime += 1;
+            }
         }
     }
 
     private void Attack()
     {
-        //¼ø¼­2-5. °ø°İ »óÅÂÀÏ ¶§ °Å¸®°¡ ¸Ö¾îÁö¸é ÀÌµ¿ »óÅÂ·Î º¯°æÇÑ´Ù.
-        if(distanceToPlayer > 2f)
+        //ìˆœì„œ1-3. ê³µê²© ìƒíƒœì¼ ë•ŒëŠ” í”Œë ˆì´ì–´ë¥¼ ê³µê²©í•œë‹¤.
+        currentTime += Time.deltaTime * attackDelay;
+        if(currentTime > 1)
+        {
+            player.GetComponent<PlayerMove>().GetDamage(attackPower);
+            print("ê³µê²©"!);
+            currentTime = 0;
+        }
+
+        //ìˆœì„œ2-5. ê³µê²© ìƒíƒœì¼ ë•Œ ê±°ë¦¬ê°€ ë©€ì–´ì§€ë©´ ì´ë™ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+        if (distanceToPlayer > (attackDistance + 1))
         {
             enemyState = EnemyState.Move;
             print("Attack -> Move");
+            currentTime = 0;
         }
     }
 
     private void Return()
     {
+        //ìˆœì„œ1-4. ë³µê·€ ìƒíƒœì¼ ë•ŒëŠ” ì´ˆê¸° ìœ„ì¹˜ë¡œ ì´ë™í•œë‹¤.
+        Vector3 dir = (originPosition - transform.position).normalized;
+        enemyController.Move(speed * 3 * Time.deltaTime * dir);
 
+        //ìˆœì„œ2-7. ë³µêµ¬ ìƒíƒœì¼ ë•Œ ì´ˆê¸° ìœ„ì¹˜ë¡œ ì´ë™í•˜ë©´ ëŒ€ê¸° ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+        if((originPosition - transform.position).magnitude < 0.4f)
+        {
+            enemyState = EnemyState.Idle;
+            print("Return -> Idle");
+        }
     }
 
     private void Damaged()
     {
+        //ìˆœì„œ2-9. í”¼ê²© ìƒíƒœì¼ ë•Œ ë°ë¯¸ì§€ ì²˜ë¦¬ë¥¼ í•˜ê³  ì²´ë ¥ì´ 0ë³´ë‹¤ í¬ë‹¤ë©´ ì´ë™ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+        if (healthPoint > 0)
+        {
+            StartCoroutine(DamageProcess());
+        }
 
+        //ìˆœì„œ2-10. í”¼ê²© ìƒíƒœì¼ ë•Œ ë°ë¯¸ì§€ ì²˜ë¦¬ë¥¼ í•˜ê³  ì²´ë ¥ì´ 0ë³´ë‹¤ ì‘ê±°ë‚˜ ê°™ë‹¤ë©´ ì‚¬ë§ ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+        else
+        {
+            enemyState = EnemyState.Die;
+        }
+    }
+
+    IEnumerator DamageProcess()
+    {
+        //í”¼ê²©ëª¨ì…˜(=0.5ì´ˆ)ê°€ ëë‚  ë•Œê¹Œì§€  ê¸°ë‹¤ë¦°ë‹¤.
+        yield return new WaitForSeconds(0.5f);
+
+        enemyState = EnemyState.Move;
+        print("Damaged -> Move");
+
+    }
+
+    //ìˆœì„œ2-8. ê³µê²©ì„ ë°›ìœ¼ë©´ í˜„ì¬ ìƒíƒœì™€ ìƒê´€ì—†ì´ í”¼ê²© ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+    public void GetDamaged(int damage)
+    {
+        //ì—ë„¤ë¯¸ê°€ ë°ë¯¸ì§€ë¥¼ ì²˜ë¦¬í•˜ëŠ” ì¤‘ì´ê±°ë‚˜ ì£½ì€ ê²½ìš° ì²˜ë¦¬í•˜ì§€ ì•ŠëŠ”ë‹¤.
+        if (enemyState == EnemyState.Damaged || enemyState == EnemyState.Die)
+        {
+            return;
+        }
+
+        enemyState = EnemyState.Damaged;
+        print(string.Format("Get {0} Damage", damage));
+
+        //ìˆœì„œ1-5. í”¼ê²© ìƒíƒœì¼ ë•ŒëŠ” HPë¥¼ ê°ì†Œì‹œí‚¨ë‹¤.
+        healthPoint -= damage;
     }
 
     private void Die()
     {
+        StopAllCoroutines();
 
+        //ìˆœì„œ1-6. ì‚¬ë§ ìƒíƒœì¼ ë•ŒëŠ” ì‚­ì œí•œë‹¤.
+        StartCoroutine(DieProcess());
+    }
+
+    IEnumerator DieProcess()
+    {
+
+        yield return new WaitForSeconds(2);
+
+        print("Enemy Die");
+
+        Destroy(gameObject);
     }
 }

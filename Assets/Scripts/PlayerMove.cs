@@ -21,6 +21,8 @@ using UnityEngine;
 //순서3-3. 점프를 했을 때 점프상태를 확인해서 점프 중이면 동작하지 않도록 한다.
 //순서3-4. 점프를 했을 때 점프 상태를 true로 설정한다.
 
+//목표4 : 플레이어가 피격을 당하면 hp를 damage만큼 깎는다.
+//속성4 : HP
 
 public class PlayerMove : MonoBehaviour
 {
@@ -35,6 +37,9 @@ public class PlayerMove : MonoBehaviour
 
     //속성3 : 점프 확인 변수
     public bool isJumping = false;
+
+    //속성4 : HP
+    public int healthPoint = 10;
 
     private void Start()
     {
@@ -83,5 +88,10 @@ public class PlayerMove : MonoBehaviour
         //순서2-2. 캐릭터 컨트롤러로 나를 이동시키고 싶다.
         controller.Move(speed * Time.deltaTime * direction);
 
+    }
+
+    public void GetDamage(int damage)
+    {
+        healthPoint -= damage;
     }
 }
