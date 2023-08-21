@@ -89,10 +89,10 @@ public class EnemyFSM : MonoBehaviour
                 Return();
                 break;
             case EnemyState.Damaged:
-                Damaged();
+                //Damaged();
                 break;
             case EnemyState.Die:
-                Die();
+                //Die();
                 break;
         }
     }
@@ -184,6 +184,7 @@ public class EnemyFSM : MonoBehaviour
         else
         {
             enemyState = EnemyState.Die;
+            Die();
         }
     }
 
@@ -194,7 +195,6 @@ public class EnemyFSM : MonoBehaviour
 
         enemyState = EnemyState.Move;
         print("Damaged -> Move");
-
     }
 
     //순서2-8. 공격을 받으면 현재 상태와 상관없이 피격 상태로 변경한다.
@@ -211,6 +211,10 @@ public class EnemyFSM : MonoBehaviour
 
         //순서1-5. 피격 상태일 때는 HP를 감소시킨다.
         healthPoint -= damage;
+
+        Damaged();
+
+
     }
 
     private void Die()
@@ -223,8 +227,7 @@ public class EnemyFSM : MonoBehaviour
 
     IEnumerator DieProcess()
     {
-
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
 
         print("Enemy Die");
 
