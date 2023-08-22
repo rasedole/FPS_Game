@@ -193,7 +193,7 @@ public class EnemyFSM : MonoBehaviour
             currentTime += Time.deltaTime * attackDelay;
             if (currentTime > 1)
             {
-                player.GetComponent<PlayerMove>().GetDamage(attackPower);
+                //player.GetComponent<PlayerMove>().GetDamage(attackPower);
                 print("공격!");
                 currentTime = 0;
                 enemyAnimator.SetTrigger("Attack2AttackDelay");
@@ -210,6 +210,12 @@ public class EnemyFSM : MonoBehaviour
             enemyAnimator.SetTrigger("Attack2Move");
         }
     }
+
+    public void AttackAction()
+    {
+        player.GetComponent<PlayerMove>().GetDamage(attackPower);
+    }
+
 
     private void Return()
     {

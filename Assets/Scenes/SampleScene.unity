@@ -919,6 +919,11 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &738045501 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8006807496889839632, guid: 5a46e7180f7615549bb44856ed666f8f, type: 3}
+  m_PrefabInstance: {fileID: 9004225255623864663}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &808395132
 GameObject:
   m_ObjectHideFlags: 0
@@ -1255,6 +1260,19 @@ Transform:
   m_Father: {fileID: 1454482742}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1026463471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 738045501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdef5eaf1feadb74a98ed03042428f42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eFSM: {fileID: 2117905673}
 --- !u!1 &1100052129
 GameObject:
   m_ObjectHideFlags: 0
@@ -1817,6 +1835,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2102269120}
   m_CullTransparentMesh: 1
+--- !u!114 &2117905673 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2527523764634803681, guid: 5a46e7180f7615549bb44856ed666f8f, type: 3}
+  m_PrefabInstance: {fileID: 9004225255623864663}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f09976bdb58b22046a70ac540eb03f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &9004225255623864663
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1888,5 +1917,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8006807496889839632, guid: 5a46e7180f7615549bb44856ed666f8f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1026463471}
   m_SourcePrefab: {fileID: 100100000, guid: 5a46e7180f7615549bb44856ed666f8f, type: 3}
