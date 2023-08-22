@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-//목표1 : 에네미를 FSM 다이어그램에 따라 동작시키고 싶다.
+//목적1 : 에네미를 FSM 다이어그램에 따라 동작시키고 싶다.
 //속성1 : 에네미의 상태, 캐릭터컨트롤러, 이동속도, 플레이어 게임오브젝트, 공격력, 초기 위치, HP
 //순서1-1. 에네미의 상태에 따라 정해진 행동을 한다.
 //순서1-2. 이동 상태일 때는 플레이어를 따라간다.
@@ -21,7 +21,7 @@ using UnityEngine.UI;
 //순서2-4. 이동 상태일 때 거리가 가까워지면 공격 상태로 변경한다.
 //순서2-5. 공격 상태일 때 거리가 멀어지면 이동 상태로 변경한다.
 //순서2-6. 이동 상태일 때 초기 위치에서 멀어지면 복귀 상태로 변경한다.
-//순서2-7. 복구 상태일 때 초기 위치로 이동하면 대기 상태로 변경한다.
+//순서2-7. 복귀 상태일 때 초기 위치로 이동하면 대기 상태로 변경한다.
 //순서2-8. 공격을 받으면 현재 상태와 상관없이 피격 상태로 변경한다.
 //순서2-9. 피격 상태일 때 데미지 처리를 하고 체력이 0보다 크다면 이동 상태로 변경한다.
 //순서2-10. 피격 상태일 때 데미지 처리를 하고 체력이 0보다 작거나 같다면 사망 상태로 변경한다.
@@ -31,6 +31,20 @@ using UnityEngine.UI;
 //순서3-1. HP를 슬라이더에 적용한다.
 
 //목적4 : Ready, GameOver 상태일 때 에네미가 움직일 수 없도록 한다.
+
+// <Alpha upgrade>
+//목적5 : 상태 변화에 따른 애니메이션을 전환한다.
+//속성5 : 애니메이터
+//순서5-1. 대기 상태에서 이동 상태로 변환할 때 애니메이션을 변환시킨다.
+//순서5-2. 이동 상태에서 대기 상태로 변환할 때 애니메이션을 변환시킨다.
+//순서5-3. 이동 상태에서 공격 상태로 변환할 때 애니메이션을 변환시킨다.
+//순서5-4. 이동 상태에서 복귀 상태로 변환할 때 애니메이션을 변환시킨다.
+//순서5-5. 공격 상태에서 이동 상태로 변환할 때 애니메이션을 변환시킨다.
+//순서5-6. 복귀 상태에서 대기 상태로 변환할 때 애니메이션을 변환시킨다.
+//순서5-7. 피격 상태에서 이동 상태로 변환할 때 애니메이션을 변환시킨다.
+//순서5-8. 어떤 상태에서든 공격 받았을 때 애니메이션을 변환시킨다.
+//순서5-9. 어떤 상태에서든 죽었을 때 애니메이션을 변환시킨다.
+
 
 public class EnemyFSM : MonoBehaviour
 {
@@ -47,24 +61,27 @@ public class EnemyFSM : MonoBehaviour
     //속성1 : 에네미의 상태, 캐릭터컨트롤러, 이동속도, 플레이어 게임오브젝트, 공격력, 초기 위치, HP
     private EnemyState enemyState;
     private CharacterController enemyController;
-    public float speed = 7.5f;
+    private float speed = 7.5f;
     private GameObject player;
-    public int attackPower = 2;
+    private int attackPower = 2;
     private Vector3 originPosition;
-    public int healthPoint = 3;
+    private int healthPoint = 3;
 
     //속성2 : 플레이어와의 거리, 플레이어의 위치, 이동거리, 공격거리, 공격속도, 현재시간, 복귀거리
     private float distanceToPlayer;
     private Transform playerTransform;
-    public float moveDistance = 10f;
-    public float attackDistance = 2f;
-    public float attackDelay = 0.5f;
+    private float moveDistance = 10f;
+    private float attackDistance = 2f;
+    private float attackDelay = 0.5f;
     private float currentTime = 0;
-    public float returnDistance = 30f;
+    private float returnDistance = 40f;
 
     //속성3 : maxHP, hp슬라이더
     private int maxHealthPoint;
     public Slider healthPointSlider;
+
+    //속성5 : 애니메이터
+    private Animator enemyAnimator;
 
     // Start is called before the first frame update
     void Start()
@@ -74,8 +91,8 @@ public class EnemyFSM : MonoBehaviour
         playerTransform = GameObject.Find("Player").transform;
         player = GameObject.Find("Player");
         originPosition = transform.position;
-
         maxHealthPoint = healthPoint;
+        enemyAnimator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -122,6 +139,8 @@ public class EnemyFSM : MonoBehaviour
         {
             enemyState = EnemyState.Move;
             print("Idle -> Move");
+            //순서5-1. 대기 상태에서 이동 상태로 변환할 때 애니메이션을 변환시킨다.
+            enemyAnimator.SetTrigger("Idle2Move");
         }
     }
 
@@ -130,6 +149,7 @@ public class EnemyFSM : MonoBehaviour
         //순서1-2. 이동 상태일 때는 플레이어를 따라간다.
         Vector3 dir = (playerTransform.position - transform.position).normalized;
         enemyController.Move(speed * Time.deltaTime * dir);
+        transform.forward = dir;
 
         //순서2-6. 이동 상태일 때 초기 위치에서 멀어지면 복귀 상태로 변경한다.
         float distanceToOrigin = (originPosition - transform.position).magnitude;
@@ -137,6 +157,8 @@ public class EnemyFSM : MonoBehaviour
         {
             enemyState = EnemyState.Return;
             print("Move -> Return");
+            //순서5-4. 이동 상태에서 복귀 상태로 변환할 때 애니메이션을 변환시킨다.
+            enemyAnimator.SetTrigger("Move2Return");
         }
         else
         {
@@ -145,6 +167,8 @@ public class EnemyFSM : MonoBehaviour
             {
                 enemyState = EnemyState.Idle;
                 print("Move -> Idle");
+                //순서5-2. 이동 상태에서 대기 상태로 변환할 때 애니메이션을 변환시킨다.
+                enemyAnimator.SetTrigger("Move2Idle");
             }
 
             //순서2-4. 이동 상태일 때 거리가 가까워지면 공격 상태로 변경한다.
@@ -153,6 +177,8 @@ public class EnemyFSM : MonoBehaviour
                 enemyState = EnemyState.Attack;
                 print("Move -> Attack");
                 currentTime += 1;
+                //순서5-3. 이동 상태에서 공격 상태로 변환할 때 애니메이션을 변환시킨다.
+                enemyAnimator.SetTrigger("Move2Attack");
             }
         }
     }
@@ -161,6 +187,8 @@ public class EnemyFSM : MonoBehaviour
     {
         if(player.GetComponent<PlayerMove>().healthPoint > 0)
         {
+            Vector3 dir = (playerTransform.position - transform.position).normalized;
+            transform.forward = dir;
             //순서1-3. 공격 상태일 때는 플레이어를 공격한다.
             currentTime += Time.deltaTime * attackDelay;
             if (currentTime > 1)
@@ -168,6 +196,7 @@ public class EnemyFSM : MonoBehaviour
                 player.GetComponent<PlayerMove>().GetDamage(attackPower);
                 print("공격!");
                 currentTime = 0;
+                enemyAnimator.SetTrigger("Attack2AttackDelay");
             }
         }
 
@@ -177,6 +206,8 @@ public class EnemyFSM : MonoBehaviour
             enemyState = EnemyState.Move;
             print("Attack -> Move");
             currentTime = 0;
+            //순서5-5. 공격 상태에서 이동 상태로 변환할 때 애니메이션을 변환시킨다.
+            enemyAnimator.SetTrigger("Attack2Move");
         }
     }
 
@@ -185,12 +216,15 @@ public class EnemyFSM : MonoBehaviour
         //순서1-4. 복귀 상태일 때는 초기 위치로 이동한다.
         Vector3 dir = (originPosition - transform.position).normalized;
         enemyController.Move(speed * 3 * Time.deltaTime * dir);
+        transform.forward = dir;
 
-        //순서2-7. 복구 상태일 때 초기 위치로 이동하면 대기 상태로 변경한다.
+        //순서2-7. 복귀 상태일 때 초기 위치로 이동하면 대기 상태로 변경한다.
         if ((originPosition - transform.position).magnitude < 0.4f)
         {
             enemyState = EnemyState.Idle;
             print("Return -> Idle");
+            //순서5-6. 복귀 상태에서 대기 상태로 변환할 때 애니메이션을 변환시킨다.
+            enemyAnimator.SetTrigger("Return2Idle");
         }
     }
 
@@ -199,12 +233,18 @@ public class EnemyFSM : MonoBehaviour
         //순서2-9. 피격 상태일 때 데미지 처리를 하고 체력이 0보다 크다면 이동 상태로 변경한다.
         if (healthPoint > 0)
         {
+            //순서5-8. 어떤 상태에서든 공격 받았을 때 애니메이션을 변환시킨다.
+            enemyAnimator.SetTrigger("AnyState2Damaged");
+
             StartCoroutine(DamageProcess());
         }
 
         //순서2-10. 피격 상태일 때 데미지 처리를 하고 체력이 0보다 작거나 같다면 사망 상태로 변경한다.
         else
         {
+            //순서5-9. 어떤 상태에서든 죽었을 때 애니메이션을 변환시킨다.
+            enemyAnimator.SetTrigger("AnyState2Die");
+
             enemyState = EnemyState.Die;
             Die();
         }
@@ -217,6 +257,8 @@ public class EnemyFSM : MonoBehaviour
 
         enemyState = EnemyState.Move;
         print("Damaged -> Move");
+        //순서5-7. 피격 상태에서 이동 상태로 변환할 때 애니메이션을 변환시킨다.
+        enemyAnimator.SetTrigger("Damaged2Move");
     }
 
     //순서2-8. 공격을 받으면 현재 상태와 상관없이 피격 상태로 변경한다.
@@ -235,8 +277,6 @@ public class EnemyFSM : MonoBehaviour
         healthPoint -= damage;
 
         Damaged();
-
-
     }
 
     private void Die()
@@ -249,7 +289,7 @@ public class EnemyFSM : MonoBehaviour
 
     IEnumerator DieProcess()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
 
         print("Enemy Die");
 

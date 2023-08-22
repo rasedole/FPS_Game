@@ -80,7 +80,10 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(GameManager.Instance.state != GameManager.GameState.Start)
+        //순서5-1. HP를 슬라이더에 적용한다.
+        healthPointSlider.value = (float)healthPoint / (float)maxHealthPoint;
+
+        if (GameManager.Instance.state != GameManager.GameState.Start)
         {
             return;
         }
@@ -123,9 +126,6 @@ public class PlayerMove : MonoBehaviour
 
         //순서2-2. 캐릭터 컨트롤러로 나를 이동시키고 싶다.
         controller.Move(speed * Time.deltaTime * direction);
-
-        //순서5-1. HP를 슬라이더에 적용한다.
-        healthPointSlider.value = (float)healthPoint / (float)maxHealthPoint;
     }
 
     //순서6-1. 적의 공격을 받는다.
