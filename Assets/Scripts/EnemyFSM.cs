@@ -30,6 +30,8 @@ using UnityEngine.UI;
 //속성3 : UnityEngine.UI, maxHP, hp슬라이더
 //순서3-1. HP를 슬라이더에 적용한다.
 
+//목적4 : Ready, GameOver 상태일 때 에네미가 움직일 수 없도록 한다.
+
 public class EnemyFSM : MonoBehaviour
 {
     enum EnemyState
@@ -79,6 +81,11 @@ public class EnemyFSM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.state != GameManager.GameState.Start)
+        {
+            return;
+        }
+
         //순서2-1. 플레이어와의 거리를 측정한다.
         distanceToPlayer = (playerTransform.position - transform.position).magnitude;
 

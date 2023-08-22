@@ -16,6 +16,8 @@ using UnityEngine;
 //순서2-4. 카메라를 우로 45도까지 기울인다.
 //순서2-5. 버튼을 해제하면 원래 상태로 돌아온다.
 
+//목적3 : Ready, GameOver 상태일 때 플레이어가 움직일 수 없도록 한다.
+
 public class CamRotate : MonoBehaviour
 {
     //속성1 : 마우스 입력 X, Y, 회전속도
@@ -27,6 +29,11 @@ public class CamRotate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.state != GameManager.GameState.Start)
+        {
+            return;
+        }
+
         //순서1-1. 사용자의 마우스 X, Y입력을 받는다.
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");

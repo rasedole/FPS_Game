@@ -21,6 +21,8 @@ using UnityEngine;
 //순서3-1. 레이가 에네미와 부딫힌다.
 //순서3-2. 에네미에게 데미지를 준다.
 
+//목적4 : Ready, GameOver 상태일 때 플레이어가 움직일 수 없도록 한다.
+
 public class PlayerFire : MonoBehaviour
 {
     //속성1 : 폭탄 게임오브젝트, 발사 위치, 방향, 힘
@@ -45,6 +47,11 @@ public class PlayerFire : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.state != GameManager.GameState.Start)
+        {
+            return;
+        }
+
         //순서1-1. 마우스 우클릭을 누른다.
         if (Input.GetMouseButtonDown(1))
         {

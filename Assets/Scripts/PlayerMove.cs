@@ -40,6 +40,7 @@ using UnityEngine.UI;
 //순서7-1. 적의 공격을 받아 죽는다.
 //순서7-2. hitImage의 알파값을 255로 만든다.
 
+//목적8 : Ready, GameOver 상태일 때 플레이어가 움직일 수 없도록 한다.
 
 public class PlayerMove : MonoBehaviour
 {
@@ -79,6 +80,11 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(GameManager.Instance.state != GameManager.GameState.Start)
+        {
+            return;
+        }
+
         //순서1-1. 사용자의 입력을 받는다.
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
