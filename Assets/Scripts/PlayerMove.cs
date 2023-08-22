@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 //목표1 : W, A, S, D 키를 누르면 캐릭터를 해당 방향으로 이동시키고 싶다.
 //속성 : 이동속도 
@@ -24,6 +25,10 @@ using UnityEngine;
 //목표4 : 플레이어가 피격을 당하면 hp를 damage만큼 깎는다.
 //속성4 : HP
 
+//목표5 : 현재 플레이어의 hp(%)를 hp 슬라이더에 적용한다.
+//속성5 : UnityEnging.UI, maxHP, HP슬라이더
+//순서5-1. HP를 슬라이더에 적용한다.
+
 public class PlayerMove : MonoBehaviour
 {
     //속성 : 이동속도 
@@ -40,6 +45,10 @@ public class PlayerMove : MonoBehaviour
 
     //속성4 : HP
     public int healthPoint = 10;
+
+    //속성5 : maxHP, HP슬라이더
+    public int maxHealthPoint = 10;
+    public Slider healthPointSlider;
 
     private void Start()
     {
@@ -60,7 +69,7 @@ public class PlayerMove : MonoBehaviour
         }
         //순서3-2. 바닥에 있을 경우 수직속도를 0으로 한다.
         else if (controller.collisionFlags == CollisionFlags.Below)
-        {   
+        {
             yVelocity = 0;
         }
         //순서2-3. Space를 누르면 점프력에 따라 수직으로 이동한다.
@@ -88,6 +97,8 @@ public class PlayerMove : MonoBehaviour
         //순서2-2. 캐릭터 컨트롤러로 나를 이동시키고 싶다.
         controller.Move(speed * Time.deltaTime * direction);
 
+        //순서5-1. HP를 슬라이더에 적용한다.
+        healthPointSlider.value = (float)healthPoint / (float)maxHealthPoint;
     }
 
     public void GetDamage(int damage)

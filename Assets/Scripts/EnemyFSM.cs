@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
-//목적1 : 에네미를 FSM 다이어그램에 따라 동작시키고 싶다.
+//목표1 : 에네미를 FSM 다이어그램에 따라 동작시키고 싶다.
 //속성1 : 에네미의 상태, 캐릭터컨트롤러, 이동속도, 플레이어 게임오브젝트, 공격력, 초기 위치, HP
 //순서1-1. 에네미의 상태에 따라 정해진 행동을 한다.
 //순서1-2. 이동 상태일 때는 플레이어를 따라간다.
@@ -26,6 +26,9 @@ using UnityEngine.UIElements;
 //순서2-9. 피격 상태일 때 데미지 처리를 하고 체력이 0보다 크다면 이동 상태로 변경한다.
 //순서2-10. 피격 상태일 때 데미지 처리를 하고 체력이 0보다 작거나 같다면 사망 상태로 변경한다.
 
+//목적3 : 에네미의 HP를 HP슬라이더에 연결한다.
+//속성3 : UnityEngine.UI, maxHP, hp슬라이더
+//순서3-1. HP를 슬라이더에 적용한다.
 
 public class EnemyFSM : MonoBehaviour
 {
@@ -56,6 +59,10 @@ public class EnemyFSM : MonoBehaviour
     public float attackDelay = 0.5f;
     private float currentTime = 0;
     public float returnDistance = 30f;
+
+    //속성3 : maxHP, hp슬라이더
+    public int maxHealthPoint = 3;
+    public Slider healthPointSlider;
 
     // Start is called before the first frame update
     void Start()
@@ -95,6 +102,9 @@ public class EnemyFSM : MonoBehaviour
                 //Die();
                 break;
         }
+
+        //순서3-1. HP를 슬라이더에 적용한다.
+        healthPointSlider.value = (float)healthPoint / (float)maxHealthPoint;
     }
     private void Idle()
     {
@@ -114,7 +124,7 @@ public class EnemyFSM : MonoBehaviour
 
         //순서2-6. 이동 상태일 때 초기 위치에서 멀어지면 복귀 상태로 변경한다.
         float distanceToOrigin = (originPosition - transform.position).magnitude;
-        if(distanceToOrigin > returnDistance)
+        if (distanceToOrigin > returnDistance)
         {
             enemyState = EnemyState.Return;
             print("Move -> Return");
@@ -142,10 +152,10 @@ public class EnemyFSM : MonoBehaviour
     {
         //순서1-3. 공격 상태일 때는 플레이어를 공격한다.
         currentTime += Time.deltaTime * attackDelay;
-        if(currentTime > 1)
+        if (currentTime > 1)
         {
             player.GetComponent<PlayerMove>().GetDamage(attackPower);
-            print("공격"!);
+            print("공격!");
             currentTime = 0;
         }
 
@@ -165,7 +175,7 @@ public class EnemyFSM : MonoBehaviour
         enemyController.Move(speed * 3 * Time.deltaTime * dir);
 
         //순서2-7. 복구 상태일 때 초기 위치로 이동하면 대기 상태로 변경한다.
-        if((originPosition - transform.position).magnitude < 0.4f)
+        if ((originPosition - transform.position).magnitude < 0.4f)
         {
             enemyState = EnemyState.Idle;
             print("Return -> Idle");
