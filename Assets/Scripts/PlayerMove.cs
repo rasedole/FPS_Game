@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,6 +30,17 @@ using UnityEngine.UI;
 //속성5 : UnityEnging.UI, maxHP, HP슬라이더
 //순서5-1. HP를 슬라이더에 적용한다.
 
+//목표6 : 적의 공격을 받았을 때 hitImage를 켰다가 꺼준다.
+//속성6 : hitImage 게임오브젝트
+//순서6-1. 적의 공격을 받는다.
+//순서6-2. hitImage를 True로 한다.
+
+//목표7 : 적의 공격을 받아 죽으면 화면을 빨간색으로 만든다.
+//속성7 : 현재시간, 특정시간
+//순서7-1. 적의 공격을 받아 죽는다.
+//순서7-2. hitImage의 알파값을 255로 만든다.
+
+
 public class PlayerMove : MonoBehaviour
 {
     //속성 : 이동속도 
@@ -47,12 +59,21 @@ public class PlayerMove : MonoBehaviour
     public int healthPoint = 10;
 
     //속성5 : maxHP, HP슬라이더
-    public int maxHealthPoint = 10;
+    private int maxHealthPoint;
     public Slider healthPointSlider;
+
+    //속성6 : hitImage 게임오브젝트
+    public GameObject hitImage;
+
+    //속성7 : 현재시간, 특정시간
+    private float currentTime = 0;
+    public float endTime = 3f;
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+
+        maxHealthPoint = healthPoint;
     }
 
     // Update is called once per frame
@@ -101,8 +122,52 @@ public class PlayerMove : MonoBehaviour
         healthPointSlider.value = (float)healthPoint / (float)maxHealthPoint;
     }
 
+    //순서6-1. 적의 공격을 받는다.
     public void GetDamage(int damage)
     {
         healthPoint -= damage;
+
+        if (healthPoint > 0)
+        {
+            //순서6-2. hitImage를 True로 한다.
+            StartCoroutine(HitEffect());
+        }
+
+        //순서7-1. 적의 공격을 받아 죽는다.
+        else
+        {
+            //순서7-2. hitImage의 알파값을 255로 만든다.
+            StartCoroutine(DeadEffect());
+        }
+    }
+
+    IEnumerator HitEffect()
+    {
+        hitImage.SetActive(true);
+        yield return new WaitForSeconds(0.15f);
+        hitImage.SetActive(false);
+    }
+
+    IEnumerator DeadEffect()
+    {
+        hitImage.SetActive(true);
+        Color hitImageColor = hitImage.GetComponent<Image>().color;
+
+        while (true)
+        {
+            currentTime += Time.deltaTime;
+
+            yield return null;
+            
+            hitImageColor.a = Mathf.Lerp(100/255, 1, currentTime / endTime);
+
+            hitImage.GetComponent<Image>().color = hitImageColor;
+
+            if(currentTime > endTime)
+            {
+                currentTime = 0;
+                break;
+            }
+        }
     }
 }

@@ -61,7 +61,7 @@ public class EnemyFSM : MonoBehaviour
     public float returnDistance = 30f;
 
     //속성3 : maxHP, hp슬라이더
-    public int maxHealthPoint = 3;
+    private int maxHealthPoint;
     public Slider healthPointSlider;
 
     // Start is called before the first frame update
@@ -72,6 +72,8 @@ public class EnemyFSM : MonoBehaviour
         playerTransform = GameObject.Find("Player").transform;
         player = GameObject.Find("Player");
         originPosition = transform.position;
+
+        maxHealthPoint = healthPoint;
     }
 
     // Update is called once per frame
@@ -150,13 +152,16 @@ public class EnemyFSM : MonoBehaviour
 
     private void Attack()
     {
-        //순서1-3. 공격 상태일 때는 플레이어를 공격한다.
-        currentTime += Time.deltaTime * attackDelay;
-        if (currentTime > 1)
+        if(player.GetComponent<PlayerMove>().healthPoint > 0)
         {
-            player.GetComponent<PlayerMove>().GetDamage(attackPower);
-            print("공격!");
-            currentTime = 0;
+            //순서1-3. 공격 상태일 때는 플레이어를 공격한다.
+            currentTime += Time.deltaTime * attackDelay;
+            if (currentTime > 1)
+            {
+                player.GetComponent<PlayerMove>().GetDamage(attackPower);
+                print("공격!");
+                currentTime = 0;
+            }
         }
 
         //순서2-5. 공격 상태일 때 거리가 멀어지면 이동 상태로 변경한다.

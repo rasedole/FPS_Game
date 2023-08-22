@@ -64,7 +64,6 @@ public class CamRotate : MonoBehaviour
                 //순서2-4. 카메라를 우로 45도까지 기울인다.
                 transform.eulerAngles += 3 * Time.deltaTime * new Vector3(0, 0, -45);
                 rotateZ = transform.eulerAngles.z;
-                print("Z rotate : " + transform.eulerAngles.z);
             }
         }
         else
