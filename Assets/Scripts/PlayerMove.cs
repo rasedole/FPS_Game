@@ -65,7 +65,7 @@ public class PlayerMove : MonoBehaviour
     public bool isJumping = false;
 
     //속성4 : HP
-    public int healthPoint = 10;
+    public int healthPoint = 50;
 
     //속성5 : maxHP, HP슬라이더
     private int maxHealthPoint;

@@ -71,7 +71,7 @@ Transform:
   - {fileID: 8984032543730740938}
   - {fileID: 8881121691890782587}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5693436748798175016
 MeshFilter:
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3baf9549d7287de4aaa4b3eb9fe36c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateSpeed: 800
+  rotateSpeed: 400
 --- !u!114 &7388462450285218769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,7 +151,7 @@ MonoBehaviour:
   speed: 10
   jumpPower: 3
   isJumping: 0
-  healthPoint: 10
+  healthPoint: 50
   healthPointSlider: {fileID: 0}
   hitImage: {fileID: 0}
   endTime: 3
@@ -198,7 +198,7 @@ MonoBehaviour:
   firePosition: {fileID: 511599755085557701}
   power: 50
   hitEffect: {fileID: 5372684554945126163}
-  weaponPower: 1
+  weaponPower: 3
   zoomUI: {fileID: 0}
   playerUI1: {fileID: 0}
   playerUI2: {fileID: 0}
@@ -209,6 +209,7 @@ MonoBehaviour:
   maxBullet: 300
   bulletText: {fileID: 0}
   isReloading: 0
+  reloadUI: {fileID: 0}
 --- !u!1 &8335021663706774588
 GameObject:
   m_ObjectHideFlags: 0
@@ -314,11 +315,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1113040f6d5339c4f8f78e12f2b91469, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateSpeed: 800
+  rotateSpeed: 400
   mX: 0
   mY: 0
   moveTime: 0.5
-  player: {fileID: 0}
+  player: {fileID: 6073232626118816392}
 --- !u!1 &8653136500620238297
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,7 +429,7 @@ MonoBehaviour:
   mX: 0
   mY: 0
   moveTime: 0.5
-  player: {fileID: 0}
+  player: {fileID: 6073232626118816392}
 --- !u!1001 &5372684554945092017
 PrefabInstance:
   m_ObjectHideFlags: 0

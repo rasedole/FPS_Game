@@ -47,6 +47,10 @@ using Unity.VisualScripting;
 //목적7 : 이동 블랜드 트리의 파라메터 값이 0일 때, Attack Trigger를 시전하겠다.
 //속성7 : 자식 오브젝트의 애니메이터
 
+//목적8 : 재장전 중 재장전 UI를 표시한다.
+//속성8 : 재장전UI
+
+
 
 public class PlayerFire : MonoBehaviour
 {
@@ -62,7 +66,7 @@ public class PlayerFire : MonoBehaviour
     protected ParticleSystem particle;
 
     //속성3 : 공격력
-    public int weaponPower = 2;
+    public int weaponPower = 3;
 
     //속성5 : 조준UI, 플레이어 UI, 조준 카메라, 줌 bool 변수, 메인 카메라
     public GameObject zoomUI;
@@ -81,11 +85,16 @@ public class PlayerFire : MonoBehaviour
     //속성7 : 자식 오브젝트의 애니메이터
     private Animator animator;
 
+    //속성8 : 재장전UI
+    public TMP_Text reloadUI;
+
     private void Start()
     {
         particle = hitEffect.GetComponent<ParticleSystem>();
         bulletText.text = currentBullet.ToString() + "/" + maxBullet.ToString();
         animator = GetComponentInChildren<Animator>();
+
+        zoomCamera.GetComponent<CamRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed / 4;
     }
 
 
@@ -108,7 +117,7 @@ public class PlayerFire : MonoBehaviour
 
             //순서1-4. 폭탄 오브젝트를 카메라방향으로 힘에 비례해서 발사한다.
             Rigidbody rigidbody = bombGO.GetComponent<Rigidbody>();
-            if(Camera.main != null)
+            if (Camera.main != null)
             {
                 direction = Camera.main.transform.forward;
             }
@@ -123,13 +132,12 @@ public class PlayerFire : MonoBehaviour
         //순서2-1. 마우스 좌클릭을 누른다.
         if (Input.GetMouseButtonDown(0))
         {
-            if(currentBullet > 0)
+            if (currentBullet > 0)
             {
-                if(animator.GetFloat("MoveMotion") == 0)
+                if (animator.GetFloat("MoveMotion") == 0)
                 {
                     animator.SetTrigger("Attack");
                 }
-
                 //순서6-1. 총을 쏘면 총알이 줄어든다.
                 currentBullet--;
 
@@ -160,9 +168,10 @@ public class PlayerFire : MonoBehaviour
                         hitInfo.transform.gameObject.GetComponent<EnemyFSM>().GetDamaged(weaponPower);
                     }
                 }
+
             }
-                //순서6-2. 현재총알이 0발일 경우 총을 쏘는 대신에 재장전을 한다.
-            else if(!isReloading)
+            //순서6-2. 현재총알이 0발일 경우 총을 쏘는 대신에 재장전을 한다.
+            else if (!isReloading)
             {
                 StartCoroutine(ReloadBullet());
             }
@@ -196,6 +205,7 @@ public class PlayerFire : MonoBehaviour
                 zoomCamera.GetComponent<CamRotate>().mY = mainCamera.GetComponent<CamRotate>().mY;
                 mainCamera.SetActive(false);
 
+                gameObject.GetComponent<PlayerRotate>().rotateSpeed = zoomCamera.GetComponent<CamRotate>().rotateSpeed;
             }
             //순서5-6. 다시 휠클릭을 누른다.
             else
@@ -213,6 +223,8 @@ public class PlayerFire : MonoBehaviour
                 mainCamera.GetComponent<CamRotate>().mX = zoomCamera.GetComponent<CamRotate>().mX;
                 mainCamera.GetComponent<CamRotate>().mY = zoomCamera.GetComponent<CamRotate>().mY;
                 zoomCamera.SetActive(false);
+
+                gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed;
             }
         }
 
@@ -222,11 +234,12 @@ public class PlayerFire : MonoBehaviour
     IEnumerator ReloadBullet()
     {
         isReloading = true;
+        reloadUI.gameObject.SetActive(true);
         //순서6-3. 재장전이 끝나면 모든총알에서 30발만큼 줄어들고 현재총알이 30발이 된다.
         maxBullet += currentBullet;
         currentBullet = 0;
         yield return new WaitForSeconds(2f);
-        if(maxBullet < 30)
+        if (maxBullet < 30)
         {
             currentBullet = maxBullet;
             maxBullet = 0;
@@ -237,5 +250,6 @@ public class PlayerFire : MonoBehaviour
             currentBullet = 30;
         }
         isReloading = false;
+        reloadUI.gameObject.SetActive(false);
     }
 }

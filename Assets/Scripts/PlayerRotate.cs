@@ -13,7 +13,7 @@ using UnityEngine;
 public class PlayerRotate : MonoBehaviour
 {
     //속성1 : 마우스 입력 X, 회전속도
-    public float rotateSpeed = 800.0f;
+    public float rotateSpeed = 400.0f;
     protected float mouseX;
 
     // Update is called once per frame

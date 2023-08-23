@@ -49,10 +49,13 @@ using UnityEngine.UI;
 //목적6 : 네비게이션 에이전트의 최소거리를 입력해주고 플레이어를 따라갈 수 있도록 한다.
 //속성6 : 네비게이션 에이전트
 
+//목적7 : 네비게이션 에이전트의 초기 속도를 Agent의 속도로 저장해준다.
+
+
 
 public class EnemyFSM : MonoBehaviour
 {
-    enum EnemyState
+    public enum EnemyState
     {
         Idle,
         Move,
@@ -63,22 +66,22 @@ public class EnemyFSM : MonoBehaviour
     }
 
     //속성1 : 에네미의 상태, 캐릭터컨트롤러, 이동속도, 플레이어 게임오브젝트, 공격력, 초기 위치, HP
-    private EnemyState enemyState;
+    public EnemyState enemyState;
     private CharacterController enemyController;
-    private float speed = 9.5f;
+    public float speed = 9.5f;
     private GameObject player;
     public int attackPower = 2;
     private Vector3 originPosition;
-    public int healthPoint = 3;
+    public int healthPoint = 10;
 
     //속성2 : 플레이어와의 거리, 플레이어의 위치, 이동거리, 공격거리, 공격속도, 현재시간, 복귀거리
     private float distanceToPlayer;
     private Transform playerTransform;
-    public float moveDistance = 70f;
+    public float moveDistance = 5000f;
     private float attackDistance = 2f;
     private float attackDelay = 0.5f;
     private float currentTime = 0;
-    public float returnDistance = 500f;
+    public float returnDistance = 5000f;
 
     //속성3 : maxHP, hp슬라이더
     private int maxHealthPoint;
@@ -100,6 +103,9 @@ public class EnemyFSM : MonoBehaviour
         originPosition = transform.position;
         maxHealthPoint = healthPoint;
         enemyAnimator = GetComponentInChildren<Animator>();
+
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        navMeshAgent.speed = speed;
     }
 
     // Update is called once per frame
@@ -154,10 +160,14 @@ public class EnemyFSM : MonoBehaviour
     private void Move()
     {
         //순서1-2. 이동 상태일 때는 플레이어를 따라간다.
-        Vector3 dir = (playerTransform.position - transform.position).normalized;
-        dir.y = 0;
-        enemyController.Move(speed * Time.deltaTime * dir);
-        transform.forward = dir;
+        //Vector3 dir = (playerTransform.position - transform.position).normalized;
+        //dir.y = 0;
+        //enemyController.Move(speed * Time.deltaTime * dir);
+        //transform.forward = dir;
+        navMeshAgent.isStopped = true;
+        navMeshAgent.ResetPath();
+        navMeshAgent.stoppingDistance = attackDistance;
+        navMeshAgent.SetDestination(player.transform.position);
 
         //순서2-6. 이동 상태일 때 초기 위치에서 멀어지면 복귀 상태로 변경한다.
         float distanceToOrigin = (originPosition - transform.position).magnitude;
@@ -173,6 +183,9 @@ public class EnemyFSM : MonoBehaviour
             //순서2-3. 이동 상태일 때 거리가 멀어지면 대기 상태로 변경한다.
             if (distanceToPlayer > (moveDistance + 2))
             {
+                navMeshAgent.isStopped = true;
+                navMeshAgent.ResetPath();
+
                 enemyState = EnemyState.Idle;
                 print("Move -> Idle");
                 //순서5-2. 이동 상태에서 대기 상태로 변환할 때 애니메이션을 변환시킨다.
@@ -182,6 +195,9 @@ public class EnemyFSM : MonoBehaviour
             //순서2-4. 이동 상태일 때 거리가 가까워지면 공격 상태로 변경한다.
             if (distanceToPlayer < attackDistance)
             {
+                navMeshAgent.isStopped = true;
+                navMeshAgent.ResetPath();
+
                 enemyState = EnemyState.Attack;
                 print("Move -> Attack");
                 currentTime += 1;
@@ -228,13 +244,21 @@ public class EnemyFSM : MonoBehaviour
     private void Return()
     {
         //순서1-4. 복귀 상태일 때는 초기 위치로 이동한다.
-        Vector3 dir = (originPosition - transform.position).normalized;
-        enemyController.Move(speed * 3 * Time.deltaTime * dir);
-        transform.forward = dir;
+        //Vector3 dir = (originPosition - transform.position).normalized;
+        //enemyController.Move(speed * 3 * Time.deltaTime * dir);
+        //transform.forward = dir;
+
+        navMeshAgent.isStopped = true;
+        navMeshAgent.ResetPath();
+        navMeshAgent.stoppingDistance = 0.1f;
+        navMeshAgent.SetDestination(originPosition);
 
         //순서2-7. 복귀 상태일 때 초기 위치로 이동하면 대기 상태로 변경한다.
         if ((originPosition - transform.position).magnitude < 0.1f)
         {
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
+
             enemyState = EnemyState.Idle;
             print("Return -> Idle");
             //순서5-6. 복귀 상태에서 대기 상태로 변환할 때 애니메이션을 변환시킨다.
@@ -244,6 +268,9 @@ public class EnemyFSM : MonoBehaviour
 
     private void Damaged()
     {
+        navMeshAgent.isStopped = true;
+        navMeshAgent.ResetPath();
+
         //순서2-9. 피격 상태일 때 데미지 처리를 하고 체력이 0보다 크다면 이동 상태로 변경한다.
         if (healthPoint > 0)
         {
