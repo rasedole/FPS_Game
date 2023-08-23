@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 //목적1 : 에네미를 FSM 다이어그램에 따라 동작시키고 싶다.
@@ -45,6 +46,9 @@ using UnityEngine.UI;
 //순서5-8. 어떤 상태에서든 공격 받았을 때 애니메이션을 변환시킨다.
 //순서5-9. 어떤 상태에서든 죽었을 때 애니메이션을 변환시킨다.
 
+//목적6 : 네비게이션 에이전트의 최소거리를 입력해주고 플레이어를 따라갈 수 있도록 한다.
+//속성6 : 네비게이션 에이전트
+
 
 public class EnemyFSM : MonoBehaviour
 {
@@ -63,18 +67,18 @@ public class EnemyFSM : MonoBehaviour
     private CharacterController enemyController;
     private float speed = 9.5f;
     private GameObject player;
-    private int attackPower = 2;
+    public int attackPower = 2;
     private Vector3 originPosition;
-    private int healthPoint = 3;
+    public int healthPoint = 3;
 
     //속성2 : 플레이어와의 거리, 플레이어의 위치, 이동거리, 공격거리, 공격속도, 현재시간, 복귀거리
     private float distanceToPlayer;
     private Transform playerTransform;
-    private float moveDistance = 10f;
+    public float moveDistance = 70f;
     private float attackDistance = 2f;
     private float attackDelay = 0.5f;
     private float currentTime = 0;
-    private float returnDistance = 40f;
+    public float returnDistance = 500f;
 
     //속성3 : maxHP, hp슬라이더
     private int maxHealthPoint;
@@ -82,6 +86,9 @@ public class EnemyFSM : MonoBehaviour
 
     //속성5 : 애니메이터
     private Animator enemyAnimator;
+
+    //속성6 : 네비게이션 에이전트
+    private NavMeshAgent navMeshAgent;
 
     // Start is called before the first frame update
     void Start()
