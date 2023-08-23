@@ -16,11 +16,13 @@ public class EnemyManager : MonoBehaviour
     public GameObject enemy2;
     public float currentTime = 0;
     public float popTime = 10f;
+    Transform myTransform;
 
     // Start is called before the first frame update
     void Start()
     {
         popTime = Random.Range(5f, 15f);
+        myTransform = this.transform;
     }
 
     // Update is called once per frame
@@ -35,18 +37,12 @@ public class EnemyManager : MonoBehaviour
             //순서1-3. 랜덤값에 따라 적을 생성한다.
             if(Random.Range(0f,1f) < 0.95f)
             {
-                GameObject enemyGO = Instantiate(enemy1);
-                enemyGO.transform.position = this.transform.position;
+                GameObject enemyGO = Instantiate(enemy1, myTransform.position, myTransform.rotation);
+                //enemyGO.transform.position = myTransform;
             }
             else
             {
-                GameObject enemyGO = Instantiate(enemy2);
-                enemyGO.transform.position = this.transform.position;
-                EnemyFSM fsm = enemyGO.GetComponent<EnemyFSM>();
-                fsm.healthPoint = 50;
-                fsm.speed = 12f;
-                fsm.attackPower = 4;
-                fsm.moveDistance = 3000;
+                GameObject enemyGO = Instantiate(enemy2, myTransform.position, myTransform.rotation);
             }
 
             currentTime = 0;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -77,11 +78,11 @@ public class EnemyFSM : MonoBehaviour
     //속성2 : 플레이어와의 거리, 플레이어의 위치, 이동거리, 공격거리, 공격속도, 현재시간, 복귀거리
     private float distanceToPlayer;
     private Transform playerTransform;
-    public float moveDistance = 5000f;
+    public float moveDistance = 7000f;
     private float attackDistance = 2f;
     private float attackDelay = 0.5f;
     private float currentTime = 0;
-    public float returnDistance = 5000f;
+    public float returnDistance = 7000f;
 
     //속성3 : maxHP, hp슬라이더
     private int maxHealthPoint;
@@ -106,11 +107,15 @@ public class EnemyFSM : MonoBehaviour
 
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = speed;
+        navMeshAgent.ResetPath();
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        
         if (GameManager.Instance.state != GameManager.GameState.Start)
         {
             return;
@@ -164,8 +169,8 @@ public class EnemyFSM : MonoBehaviour
         //dir.y = 0;
         //enemyController.Move(speed * Time.deltaTime * dir);
         //transform.forward = dir;
-        navMeshAgent.isStopped = true;
-        navMeshAgent.ResetPath();
+        //navMeshAgent.isStopped = true;
+        //navMeshAgent.ResetPath();
         navMeshAgent.stoppingDistance = attackDistance;
         navMeshAgent.SetDestination(player.transform.position);
 
@@ -268,9 +273,6 @@ public class EnemyFSM : MonoBehaviour
 
     private void Damaged()
     {
-        navMeshAgent.isStopped = true;
-        navMeshAgent.ResetPath();
-
         //순서2-9. 피격 상태일 때 데미지 처리를 하고 체력이 0보다 크다면 이동 상태로 변경한다.
         if (healthPoint > 0)
         {
@@ -305,6 +307,9 @@ public class EnemyFSM : MonoBehaviour
     //순서2-8. 공격을 받으면 현재 상태와 상관없이 피격 상태로 변경한다.
     public void GetDamaged(int damage)
     {
+        navMeshAgent.isStopped = true;
+        navMeshAgent.ResetPath();
+
         //에네미가 데미지를 처리하는 중이거나 죽은 경우 처리하지 않는다.
         if (enemyState == EnemyState.Damaged || enemyState == EnemyState.Die)
         {
@@ -337,3 +342,4 @@ public class EnemyFSM : MonoBehaviour
         Destroy(gameObject);
     }
 }
+

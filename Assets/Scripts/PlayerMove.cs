@@ -130,20 +130,20 @@ public class PlayerMove : MonoBehaviour
 
 
         //순서1-2. 이동방향을 설정한다.
-        if(Camera.main != null)
+        //if(Camera.main != null)
         {
             direction = Camera.main.transform.TransformDirection(h, 0, v);
 
             //속성10 : 모델링 오브젝트의 애니메이터
             animator.SetFloat("MoveMotion", direction.magnitude);
         }
-        else
-        {
-            direction = zoomCamera.transform.TransformDirection(h, 0, v);
+        //else
+        //{
+        //    direction = zoomCamera.transform.TransformDirection(h, 0, v);
 
-            //속성10 : 모델링 오브젝트의 애니메이터
-            animator.SetFloat("MoveMotion", direction.magnitude);
-        }
+        //    //속성10 : 모델링 오브젝트의 애니메이터
+        //    animator.SetFloat("MoveMotion", direction.magnitude);
+        //}
 
         //순서1-3. 이동속도에 따라 이동방향으로 플레이어를 이동시킨다.
         //transform.position += speed * Time.deltaTime * direction;
@@ -206,6 +206,16 @@ public class PlayerMove : MonoBehaviour
                 currentTime = 0;
                 break;
             }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag is "Item")
+        {
+            healthPoint += (int)((float)maxHealthPoint * 0.25);
+            Mathf.Clamp(healthPoint, 0, maxHealthPoint);
+            GetComponent<PlayerFire>().maxBullet += 100;
         }
     }
 }
