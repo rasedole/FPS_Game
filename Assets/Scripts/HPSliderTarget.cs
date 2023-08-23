@@ -1,12 +1,12 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//¸ñÀû1 : HP ½½¶óÀÌ´õ°¡ Å¸°ÙÀÇ ¾Õ ¹æÇâÀ¸·Î ÇâÇÏ°Ô ÇÑ´Ù.
-//¼Ó¼º1 : Å¸ÄÏ
+//ëª©ì 1 : HP ìŠ¬ë¼ì´ë”ê°€ íƒ€ê²Ÿì˜ ì• ë°©í–¥ìœ¼ë¡œ í–¥í•˜ê²Œ í•œë‹¤.
+//ì†ì„±1 : íƒ€ì¼“
 public class HPSliderTarget : MonoBehaviour
 {
-    //¼Ó¼º1 : Å¸ÄÏ
+    //ì†ì„±1 : íƒ€ì¼“
     public Transform target;
 
     // Update is called once per frame

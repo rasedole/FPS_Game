@@ -42,6 +42,10 @@ using UnityEngine.UI;
 
 //목적8 : Ready, GameOver 상태일 때 플레이어가 움직일 수 없도록 한다.
 
+//목적9 : Zoom 진행중 줌 카메라를 기준으로 이동한다.
+//속성9 : Zoom카메라
+
+
 public class PlayerMove : MonoBehaviour
 {
     //속성 : 이동속도 
@@ -69,6 +73,10 @@ public class PlayerMove : MonoBehaviour
     //속성7 : 현재시간, 특정시간
     private float currentTime = 0;
     public float endTime = 3f;
+
+    //속성9 : Zoom카메라
+    public GameObject zoomCamera;
+    Vector3 direction;
 
     private void Start()
     {
@@ -113,7 +121,14 @@ public class PlayerMove : MonoBehaviour
 
 
         //순서1-2. 이동방향을 설정한다.
-        Vector3 direction = Camera.main.transform.TransformDirection(h, 0, v);
+        if(Camera.main != null)
+        {
+            direction = Camera.main.transform.TransformDirection(h, 0, v);
+        }
+        else
+        {
+            direction = zoomCamera.transform.TransformDirection(h, 0, v);
+        }
 
         //순서1-3. 이동속도에 따라 이동방향으로 플레이어를 이동시킨다.
         //transform.position += speed * Time.deltaTime * direction;

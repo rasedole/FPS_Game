@@ -21,7 +21,7 @@ using UnityEngine;
 public class CamRotate : MonoBehaviour
 {
     //속성1 : 마우스 입력 X, Y, 회전속도
-    public float rotateSpeed = 100.0f;
+    public float rotateSpeed = 800.0f;
     private float mX = 0;
     private float mY = 0;
 

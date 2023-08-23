@@ -1,8 +1,8 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//¸ñÀû1 : ÇÃ·¹ÀÌ¾î¿¡°Ô µ¥¹ÌÁö¸¦ ÀÔÈù´Ù.
+//ëª©ì 1 : í”Œë ˆì´ì–´ì—ê²Œ ë°ë¯¸ì§€ë¥¼ ì…íŒë‹¤.
 
 public class HitEvent : MonoBehaviour
 {

@@ -1,13 +1,13 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//¸ñÀû1 : ½ÃÀÛÁ¡ºÎÅÍ ³¡Á¡±îÁö ÀÏÁ¤½Ã°£¾È¿¡ ÀÌµ¿ÇÑ´Ù.
-//¼Ó¼º1 : ½ÃÀÛÁ¡ À§Ä¡, ³¡Á¡ À§Ä¡, ÀÏÁ¤½Ã°£, ÇöÀç½Ã°£
+//ëª©ì 1 : ì‹œì‘ì ë¶€í„° ëì ê¹Œì§€ ì¼ì •ì‹œê°„ì•ˆì— ì´ë™í•œë‹¤.
+//ì†ì„±1 : ì‹œì‘ì  ìœ„ì¹˜, ëì  ìœ„ì¹˜, ì¼ì •ì‹œê°„, í˜„ì¬ì‹œê°„
 
 public class LerpPractice : MonoBehaviour
 {
-    //¼Ó¼º1 : ½ÃÀÛÁ¡ À§Ä¡, ³¡Á¡ À§Ä¡, ÀÏÁ¤½Ã°£
+    //ì†ì„±1 : ì‹œì‘ì  ìœ„ì¹˜, ëì  ìœ„ì¹˜, ì¼ì •ì‹œê°„
     public Transform startPoint;
     public Transform endPoint;
     public float moveTime = 3;

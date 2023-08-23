@@ -196,7 +196,7 @@ public class EnemyFSM : MonoBehaviour
                 //player.GetComponent<PlayerMove>().GetDamage(attackPower);
                 print("공격!");
                 currentTime = 0;
-                enemyAnimator.SetTrigger("Attack2AttackDelay");
+                enemyAnimator.SetTrigger("AttackDelay2Attack");
             }
         }
 
@@ -225,7 +225,7 @@ public class EnemyFSM : MonoBehaviour
         transform.forward = dir;
 
         //순서2-7. 복귀 상태일 때 초기 위치로 이동하면 대기 상태로 변경한다.
-        if ((originPosition - transform.position).magnitude < 0.4f)
+        if ((originPosition - transform.position).magnitude < 0.1f)
         {
             enemyState = EnemyState.Idle;
             print("Return -> Idle");
@@ -240,7 +240,7 @@ public class EnemyFSM : MonoBehaviour
         if (healthPoint > 0)
         {
             //순서5-8. 어떤 상태에서든 공격 받았을 때 애니메이션을 변환시킨다.
-            enemyAnimator.SetTrigger("AnyState2Damaged");
+            enemyAnimator.SetTrigger("Damaged");
 
             StartCoroutine(DamageProcess());
         }
@@ -249,7 +249,7 @@ public class EnemyFSM : MonoBehaviour
         else
         {
             //순서5-9. 어떤 상태에서든 죽었을 때 애니메이션을 변환시킨다.
-            enemyAnimator.SetTrigger("AnyState2Die");
+            enemyAnimator.SetTrigger("Die");
 
             enemyState = EnemyState.Die;
             Die();
@@ -264,7 +264,7 @@ public class EnemyFSM : MonoBehaviour
         enemyState = EnemyState.Move;
         print("Damaged -> Move");
         //순서5-7. 피격 상태에서 이동 상태로 변환할 때 애니메이션을 변환시킨다.
-        enemyAnimator.SetTrigger("Damaged2Move");
+        //enemyAnimator.SetTrigger("Damaged2Move");
     }
 
     //순서2-8. 공격을 받으면 현재 상태와 상관없이 피격 상태로 변경한다.

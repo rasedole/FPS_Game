@@ -23,6 +23,20 @@ using UnityEngine;
 
 //목적4 : Ready, GameOver 상태일 때 플레이어가 움직일 수 없도록 한다.
 
+//목적5 : 휠클릭으로 조준 기능을 추가한다.
+//속성5 : 조준UI, 플레이어 UI, 조준 카메라, 줌 bool 변수, 메인 카메라
+//순서5-1. 휠클릭을 누른다.
+//순서5-2. 줌 변수를 true로 한다.
+//순서5-3. 조준UI를 활성화한다.
+//순서5-4. 그 외의 UI를 비활성화 한다.
+//순서5-5. 조준 카메라를 활성화하고 메인 카메라를 비활성화한다.
+//순서5-6. 다시 휠클릭을 누른다.
+//순서5-7. 줌 변수를 false로 한다.
+//순서5-8. 조준 UI를 비활성화한다.
+//순서5-9. 그 외의 UI를 활성화한다.
+//순서5-10. 조준 카메라를 비활성화하고 메인 카메라를 활성화한다.
+
+
 public class PlayerFire : MonoBehaviour
 {
     //속성1 : 폭탄 게임오브젝트, 발사 위치, 방향, 힘
@@ -44,6 +58,14 @@ public class PlayerFire : MonoBehaviour
         particle = hitEffect.GetComponent<ParticleSystem>();
     }
 
+    //속성5 : 조준UI, 플레이어 UI, 조준 카메라, 줌 bool 변수, 메인 카메라
+    public GameObject zoomUI;
+    public GameObject playerUI1;
+    public GameObject playerUI2;
+    public GameObject zoomCamera;
+    public bool zoom = false;
+    public GameObject mainCamera;
+
     // Update is called once per frame
     void Update()
     {
@@ -63,7 +85,14 @@ public class PlayerFire : MonoBehaviour
 
             //순서1-4. 폭탄 오브젝트를 카메라방향으로 힘에 비례해서 발사한다.
             Rigidbody rigidbody = bombGO.GetComponent<Rigidbody>();
-            direction = Camera.main.transform.forward;
+            if(Camera.main != null)
+            {
+                direction = Camera.main.transform.forward;
+            }
+            else
+            {
+                direction = zoomCamera.transform.forward;
+            }
             rigidbody.AddForce(direction * power, ForceMode.Impulse);
         }
 
@@ -71,7 +100,14 @@ public class PlayerFire : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             //순서2-2. 레이를 생성하고 발사 위치와 방향을 설정한다.
-            ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            if (Camera.main != null)
+            {
+                ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            }
+            else
+            {
+                ray = new Ray(zoomCamera.transform.position, zoomCamera.transform.forward);
+            }
 
             //순서2-3. 레이가 부딫힌 대상의 정보를 저장할 수 있는 변수를 만든다.
             RaycastHit hitInfo = new RaycastHit();
@@ -89,6 +125,40 @@ public class PlayerFire : MonoBehaviour
                     //순서3-2. 에네미에게 데미지를 준다.
                     hitInfo.transform.gameObject.GetComponent<EnemyFSM>().GetDamaged(weaponPower);
                 }
+            }
+        }
+
+        //순서5-1. 휠클릭을 누른다.
+        if (Input.GetMouseButtonDown(2))
+        {
+            if (!zoom)
+            {
+                //순서5-2. 줌 변수를 true로 한다.
+                zoom = true;
+
+                //순서5-4. 그 외의 UI를 비활성화 한다.
+                playerUI1.SetActive(false);
+                playerUI2.SetActive(false);
+                //순서5-3. 조준UI를 활성화한다.
+                zoomUI.SetActive(true);
+                //순서5-5. 조준 카메라를 활성화하고 메인 카메라를 비활성화한다.
+                mainCamera.SetActive(false);
+                zoomCamera.SetActive(true);
+
+            }
+            //순서5-6. 다시 휠클릭을 누른다.
+            else
+            {
+                //순서5-7. 줌 변수를 false로 한다.
+                zoom = false;
+                //순서5-9. 그 외의 UI를 활성화한다.
+                playerUI1.SetActive(true);
+                playerUI2.SetActive(true);
+                //순서5-8. 조준 UI를 비활성화한다.
+                zoomUI.SetActive(false);
+                //순서5-10. 조준 카메라를 비활성화하고 메인 카메라를 활성화한다.
+                zoomCamera.SetActive(false);
+                mainCamera.SetActive(true);
             }
         }
     }

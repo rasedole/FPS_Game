@@ -1,30 +1,30 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
 
-//¸ñÀû1 : °ÔÀÓÀÇ »óÅÂ(Ready, Start, GameOver)¸¦ ±¸º°ÇÏ°í, °ÔÀÓÀÇ ½ÃÀÛ°ú ³¡À» Text UI·Î Ç¥ÇöÇÑ´Ù.
-//¼Ó¼º1 : TMPro, Text UI, °ÔÀÓ »óÅÂ ¸®½ºÆ®, ÇöÀç °ÔÀÓ »óÅÂ
+//ëª©ì 1 : ê²Œì„ì˜ ìƒíƒœ(Ready, Start, GameOver)ë¥¼ êµ¬ë³„í•˜ê³ , ê²Œì„ì˜ ì‹œì‘ê³¼ ëì„ Text UIë¡œ í‘œí˜„í•œë‹¤.
+//ì†ì„±1 : TMPro, Text UI, ê²Œì„ ìƒíƒœ ë¦¬ìŠ¤íŠ¸, í˜„ì¬ ê²Œì„ ìƒíƒœ
 
-//¸ñÀû2 : °ÔÀÓÀÌ ½ÃÀÛµÈ ÈÄ 3ÃÊ°¡ Áö³ª¸é Start»óÅÂ·Î º¯°æÇÑ´Ù.
-//¼ø¼­2-1. °ÔÀÓÀÌ ½ÃÀÛµÈ´Ù.
-//¼ø¼­2-2. 3ÃÊ Ä«¿îÆ®´Ù¿îÀ» ½ÃÀÛÇÑ´Ù.
-//¼ø¼­2-3. Start»óÅÂ·Î º¯°æÇÑ´Ù.
-//¼ø¼­2-4. Start text¸¦ Ãâ·ÂÇÑ´Ù.
-//¼ø¼­2-5. Text¸¦ ¾È º¸ÀÌ°Ô ÇÑ´Ù.
+//ëª©ì 2 : ê²Œì„ì´ ì‹œì‘ëœ í›„ 3ì´ˆê°€ ì§€ë‚˜ë©´ Startìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-1. ê²Œì„ì´ ì‹œì‘ëœë‹¤.
+//ìˆœì„œ2-2. 3ì´ˆ ì¹´ìš´íŠ¸ë‹¤ìš´ì„ ì‹œì‘í•œë‹¤.
+//ìˆœì„œ2-3. Startìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ2-4. Start textë¥¼ ì¶œë ¥í•œë‹¤.
+//ìˆœì„œ2-5. Textë¥¼ ì•ˆ ë³´ì´ê²Œ í•œë‹¤.
 
-//¸ñÀû3 : ÇÃ·¹ÀÌ¾îÀÇ HP°¡ 0 ÀÌÇÏ°¡ µÇ¸é GameOver »óÅÂ·Î º¯°æÇÑ´Ù.
-//¼Ó¼º3 : ÇÃ·¹ÀÌ¾î HP°¡ ´ã°ÜÀÖ´Â PlayerMove
-//¼ø¼­3-1. ÇÃ·¹ÀÌ¾îÀÇ HP°¡ 0 ÀÌÇÏ°¡ µÈ´Ù.
-//¼ø¼­3-2. »óÅÂ¸¦ GameOver»óÅÂ·Î º¯°æÇÑ´Ù.
-//¼ø¼­3-3. Text¸¦ GAME OVER·Î º¯°æÇÏ°í Ç¥½ÃÇÑ´Ù.
+//ëª©ì 3 : í”Œë ˆì´ì–´ì˜ HPê°€ 0 ì´í•˜ê°€ ë˜ë©´ GameOver ìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ì†ì„±3 : í”Œë ˆì´ì–´ HPê°€ ë‹´ê²¨ìˆëŠ” PlayerMove
+//ìˆœì„œ3-1. í”Œë ˆì´ì–´ì˜ HPê°€ 0 ì´í•˜ê°€ ëœë‹¤.
+//ìˆœì„œ3-2. ìƒíƒœë¥¼ GameOverìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
+//ìˆœì„œ3-3. Textë¥¼ GAME OVERë¡œ ë³€ê²½í•˜ê³  í‘œì‹œí•œë‹¤.
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    //¼Ó¼º1 : TMPro, Text UI, °ÔÀÓ »óÅÂ ¸®½ºÆ®, ÇöÀç °ÔÀÓ »óÅÂ
+    //ì†ì„±1 : TMPro, Text UI, ê²Œì„ ìƒíƒœ ë¦¬ìŠ¤íŠ¸, í˜„ì¬ ê²Œì„ ìƒíƒœ
     public TMP_Text stateTextUI;
     public enum GameState
     {
@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     }
     public GameState state = GameState.Ready;
 
-    //¼Ó¼º3 : ÇÃ·¹ÀÌ¾î HP°¡ ´ã°ÜÀÖ´Â PlayerMove
+    //ì†ì„±3 : í”Œë ˆì´ì–´ HPê°€ ë‹´ê²¨ìˆëŠ” PlayerMove
     PlayerMove playerHP;
 
     private void Awake()
@@ -48,11 +48,11 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //½ÃÀÛ ½Ã UI ÅØ½ºÆ®¸¦ READY·Î, »öÀ» ÁÖÈ²»öÀ¸·Î º¯°æ
+        //ì‹œì‘ ì‹œ UI í…ìŠ¤íŠ¸ë¥¼ READYë¡œ, ìƒ‰ì„ ì£¼í™©ìƒ‰ìœ¼ë¡œ ë³€ê²½
         stateTextUI.text = "READY";
         stateTextUI.color = new Color32(255, 150, 0, 255);
 
-        //¼ø¼­2-1. °ÔÀÓÀÌ ½ÃÀÛµÈ´Ù.
+        //ìˆœì„œ2-1. ê²Œì„ì´ ì‹œì‘ëœë‹¤.
         StartCoroutine(CountDownText());
 
         playerHP = GameObject.Find("Player").GetComponent<PlayerMove>();
@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator CountDownText()
     {
-        //¼ø¼­2-2. 3ÃÊ Ä«¿îÆ®´Ù¿îÀ» ½ÃÀÛÇÑ´Ù.
+        //ìˆœì„œ2-2. 3ì´ˆ ì¹´ìš´íŠ¸ë‹¤ìš´ì„ ì‹œì‘í•œë‹¤.
         yield return new WaitForSeconds(2);
         stateTextUI.text = "3";
         yield return new WaitForSeconds(1);
@@ -68,23 +68,23 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         stateTextUI.text = "1";
         yield return new WaitForSeconds(1);
-        //¼ø¼­2-3. Start»óÅÂ·Î º¯°æÇÑ´Ù.
+        //ìˆœì„œ2-3. Startìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
         state = GameState.Start;
 
-        //¼ø¼­2-4. Start text¸¦ Ãâ·ÂÇÑ´Ù.
+        //ìˆœì„œ2-4. Start textë¥¼ ì¶œë ¥í•œë‹¤.
         stateTextUI.text = "START";
         stateTextUI.color = new Color32(0, 255, 0, 255);
 
-        //¼ø¼­2-5. Text¸¦ ¾È º¸ÀÌ°Ô ÇÑ´Ù.
+        //ìˆœì„œ2-5. Textë¥¼ ì•ˆ ë³´ì´ê²Œ í•œë‹¤.
         yield return new WaitForSeconds(0.5f);
         stateTextUI.gameObject.SetActive(false);
     }
 
     void GameOver()
     {
-        //¼ø¼­3-2. »óÅÂ¸¦ GameOver»óÅÂ·Î º¯°æÇÑ´Ù.
+        //ìˆœì„œ3-2. ìƒíƒœë¥¼ GameOverìƒíƒœë¡œ ë³€ê²½í•œë‹¤.
         state = GameState.GameOver;
-        //¼ø¼­3-3. Text¸¦ GAME OVER·Î º¯°æÇÏ°í Ç¥½ÃÇÑ´Ù.
+        //ìˆœì„œ3-3. Textë¥¼ GAME OVERë¡œ ë³€ê²½í•˜ê³  í‘œì‹œí•œë‹¤.
         stateTextUI.text = "GAME OVER";
         stateTextUI.color = new Color32(255, 255, 255, 255);
         stateTextUI.gameObject.SetActive(true);
@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //¼ø¼­3-1. ÇÃ·¹ÀÌ¾îÀÇ HP°¡ 0 ÀÌÇÏ°¡ µÈ´Ù.
+        //ìˆœì„œ3-1. í”Œë ˆì´ì–´ì˜ HPê°€ 0 ì´í•˜ê°€ ëœë‹¤.
         if (playerHP.healthPoint <= 0)
         {
             GameOver();
