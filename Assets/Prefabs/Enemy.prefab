@@ -521,13 +521,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f09976bdb58b22046a70ac540eb03f31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 7.5
-  attackPower: 2
-  healthPoint: 3
-  moveDistance: 10
-  attackDistance: 2
-  attackDelay: 0.5
-  returnDistance: 30
   healthPointSlider: {fileID: 3149370145437628174}
 --- !u!1001 &5854806470759030384
 PrefabInstance:
@@ -588,14 +581,35 @@ PrefabInstance:
     - target: {fileID: 7389507112651452681, guid: 6dc4cf4496348884d8ee27743ae38562, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 394f2cffef759c747a8403efa9390075, type: 2}
+      objectReference: {fileID: 9100000, guid: 6addde6f25719754e9ed75f3c9dfa383, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4493914613880827488, guid: 6dc4cf4496348884d8ee27743ae38562, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8682045490128083322}
   m_SourcePrefab: {fileID: 100100000, guid: 6dc4cf4496348884d8ee27743ae38562, type: 3}
 --- !u!4 &6433037097016967683 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 578376449398627443, guid: 6dc4cf4496348884d8ee27743ae38562, type: 3}
   m_PrefabInstance: {fileID: 5854806470759030384}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8006807496889839632 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4493914613880827488, guid: 6dc4cf4496348884d8ee27743ae38562, type: 3}
+  m_PrefabInstance: {fileID: 5854806470759030384}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8682045490128083322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006807496889839632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdef5eaf1feadb74a98ed03042428f42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eFSM: {fileID: 2527523764634803681}

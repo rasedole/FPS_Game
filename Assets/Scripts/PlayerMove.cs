@@ -45,6 +45,10 @@ using UnityEngine.UI;
 //목적9 : Zoom 진행중 줌 카메라를 기준으로 이동한다.
 //속성9 : Zoom카메라
 
+//목적10 : 플레이어의 자식 중 모델링 오브젝트에 있는 애니메이터 컴포넌트를 가져와서 블랜딩 트리를 호출하고 싶다.
+//속성10 : 모델링 오브젝트의 애니메이터
+
+
 
 public class PlayerMove : MonoBehaviour
 {
@@ -55,7 +59,7 @@ public class PlayerMove : MonoBehaviour
     private CharacterController controller;
     private float gravity = -10.0f;
     private float yVelocity = 0;
-    public float jumpPower = 5.0f;
+    public float jumpPower = 3f;
 
     //속성3 : 점프 확인 변수
     public bool isJumping = false;
@@ -78,11 +82,16 @@ public class PlayerMove : MonoBehaviour
     public GameObject zoomCamera;
     Vector3 direction;
 
+    //속성10 : 모델링 오브젝트의 애니메이터
+    Animator animator;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
 
         maxHealthPoint = healthPoint;
+
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -124,10 +133,16 @@ public class PlayerMove : MonoBehaviour
         if(Camera.main != null)
         {
             direction = Camera.main.transform.TransformDirection(h, 0, v);
+
+            //속성10 : 모델링 오브젝트의 애니메이터
+            animator.SetFloat("MoveMotion", direction.magnitude);
         }
         else
         {
             direction = zoomCamera.transform.TransformDirection(h, 0, v);
+
+            //속성10 : 모델링 오브젝트의 애니메이터
+            animator.SetFloat("MoveMotion", direction.magnitude);
         }
 
         //순서1-3. 이동속도에 따라 이동방향으로 플레이어를 이동시킨다.
@@ -141,6 +156,8 @@ public class PlayerMove : MonoBehaviour
 
         //순서2-2. 캐릭터 컨트롤러로 나를 이동시키고 싶다.
         controller.Move(speed * Time.deltaTime * direction);
+
+
     }
 
     //순서6-1. 적의 공격을 받는다.

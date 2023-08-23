@@ -22,13 +22,20 @@ public class CamRotate : MonoBehaviour
 {
     //속성1 : 마우스 입력 X, Y, 회전속도
     public float rotateSpeed = 800.0f;
-    private float mX = 0;
-    private float mY = 0;
+    public float mX = 0;
+    public float mY = 0;
 
     //속성2 : Z회전, 현재시간 목표시간
     private float rotateZ = 0;
     private float currentTime = 0;
     public float moveTime = 0.5f;
+
+    public GameObject player;
+
+    private void Start()
+    {
+        
+    }
 
     // Update is called once per frame
     void Update()

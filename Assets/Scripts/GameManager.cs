@@ -20,6 +20,10 @@ using System;
 //순서3-2. 상태를 GameOver상태로 변경한다.
 //순서3-3. Text를 GAME OVER로 변경하고 표시한다.
 
+//목적4 : 플레이어의 HP가 0 이하가 되면 플레이어의 애니메이션을 멈춘다.
+//속성4 : 플레이어의 애니메이터 컴포넌트
+
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -36,6 +40,9 @@ public class GameManager : MonoBehaviour
 
     //속성3 : 플레이어 HP가 담겨있는 PlayerMove
     PlayerMove playerHP;
+
+    //속성4 : 플레이어의 애니메이터 컴포넌트
+    private Animator animator;
 
     private void Awake()
     {
@@ -56,6 +63,8 @@ public class GameManager : MonoBehaviour
         StartCoroutine(CountDownText());
 
         playerHP = GameObject.Find("Player").GetComponent<PlayerMove>();
+
+        animator = GameObject.Find("Player").GetComponentInChildren<Animator>();
     }
 
     IEnumerator CountDownText()
@@ -82,8 +91,11 @@ public class GameManager : MonoBehaviour
 
     void GameOver()
     {
+        animator.SetFloat("MoveMotion", 0);
+
         //순서3-2. 상태를 GameOver상태로 변경한다.
         state = GameState.GameOver;
+
         //순서3-3. Text를 GAME OVER로 변경하고 표시한다.
         stateTextUI.text = "GAME OVER";
         stateTextUI.color = new Color32(255, 255, 255, 255);

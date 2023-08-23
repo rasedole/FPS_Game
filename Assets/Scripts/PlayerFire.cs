@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using Unity.VisualScripting;
 
 //목적1 : 마우스 우클릭을 누르면 폭탄을 특정방향으로 발사한다.
 //속성1 : 폭탄 게임오브젝트, 발사 위치, 방향, 힘
@@ -36,6 +38,15 @@ using UnityEngine;
 //순서5-9. 그 외의 UI를 활성화한다.
 //순서5-10. 조준 카메라를 비활성화하고 메인 카메라를 활성화한다.
 
+//목적6 : 총을 쏠 때 마다 총알이 줄어들고 현재 총알이 0발이거나 R키를 누르면 재장전을 한다.
+//속성6 : 현재총알, 모든총알, 총알텍스트UI, 장전확인 bool변수
+//순서6-1. 총을 쏘면 총알이 줄어든다.
+//순서6-2. 현재총알이 0발일 경우 총을 쏘는 대신에 재장전을 한다.
+//순서6-3. 재장전이 끝나면 모든총알에서 30발만큼 줄어들고 현재총알이 30발이 된다.
+
+//목적7 : 이동 블랜드 트리의 파라메터 값이 0일 때, Attack Trigger를 시전하겠다.
+//속성7 : 자식 오브젝트의 애니메이터
+
 
 public class PlayerFire : MonoBehaviour
 {
@@ -53,11 +64,6 @@ public class PlayerFire : MonoBehaviour
     //속성3 : 공격력
     public int weaponPower = 2;
 
-    private void Start()
-    {
-        particle = hitEffect.GetComponent<ParticleSystem>();
-    }
-
     //속성5 : 조준UI, 플레이어 UI, 조준 카메라, 줌 bool 변수, 메인 카메라
     public GameObject zoomUI;
     public GameObject playerUI1;
@@ -65,6 +71,23 @@ public class PlayerFire : MonoBehaviour
     public GameObject zoomCamera;
     public bool zoom = false;
     public GameObject mainCamera;
+
+    //속성6 : 현재총알, 모든총알, 총알텍스트UI, 장전확인 bool변수
+    public int currentBullet = 30;
+    public int maxBullet = 300;
+    public TMP_Text bulletText;
+    public bool isReloading = false;
+
+    //속성7 : 자식 오브젝트의 애니메이터
+    private Animator animator;
+
+    private void Start()
+    {
+        particle = hitEffect.GetComponent<ParticleSystem>();
+        bulletText.text = currentBullet.ToString() + "/" + maxBullet.ToString();
+        animator = GetComponentInChildren<Animator>();
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -75,7 +98,7 @@ public class PlayerFire : MonoBehaviour
         }
 
         //순서1-1. 마우스 우클릭을 누른다.
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(4))
         {
             //순서1-2. 폭탄 오브젝트를 생성한다.
             GameObject bombGO = Instantiate(bomb);
@@ -96,40 +119,65 @@ public class PlayerFire : MonoBehaviour
             rigidbody.AddForce(direction * power, ForceMode.Impulse);
         }
 
+
         //순서2-1. 마우스 좌클릭을 누른다.
         if (Input.GetMouseButtonDown(0))
         {
-            //순서2-2. 레이를 생성하고 발사 위치와 방향을 설정한다.
-            if (Camera.main != null)
+            if(currentBullet > 0)
             {
-                ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-            }
-            else
-            {
-                ray = new Ray(zoomCamera.transform.position, zoomCamera.transform.forward);
-            }
-
-            //순서2-3. 레이가 부딫힌 대상의 정보를 저장할 수 있는 변수를 만든다.
-            RaycastHit hitInfo = new RaycastHit();
-
-            //순서2-4. 레이와 부딪힌 물체가 있으면 그 위치에 피격 효과를 만든다.
-            if (Physics.Raycast(ray, out hitInfo))
-            {
-                hitEffect.transform.position = hitInfo.point;
-                hitEffect.transform.forward = hitInfo.normal;
-                particle.Play();
-
-                //순서3-1. 레이가 에네미와 부딫힌다.
-                if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+                if(animator.GetFloat("MoveMotion") == 0)
                 {
-                    //순서3-2. 에네미에게 데미지를 준다.
-                    hitInfo.transform.gameObject.GetComponent<EnemyFSM>().GetDamaged(weaponPower);
+                    animator.SetTrigger("Attack");
                 }
+
+                //순서6-1. 총을 쏘면 총알이 줄어든다.
+                currentBullet--;
+
+                //순서2-2. 레이를 생성하고 발사 위치와 방향을 설정한다.
+                if (Camera.main != null)
+                {
+                    ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+                }
+                else
+                {
+                    ray = new Ray(zoomCamera.transform.position, zoomCamera.transform.forward);
+                }
+
+                //순서2-3. 레이가 부딫힌 대상의 정보를 저장할 수 있는 변수를 만든다.
+                RaycastHit hitInfo = new RaycastHit();
+
+                //순서2-4. 레이와 부딪힌 물체가 있으면 그 위치에 피격 효과를 만든다.
+                if (Physics.Raycast(ray, out hitInfo))
+                {
+                    hitEffect.transform.position = hitInfo.point;
+                    hitEffect.transform.forward = hitInfo.normal;
+                    particle.Play();
+
+                    //순서3-1. 레이가 에네미와 부딫힌다.
+                    if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+                    {
+                        //순서3-2. 에네미에게 데미지를 준다.
+                        hitInfo.transform.gameObject.GetComponent<EnemyFSM>().GetDamaged(weaponPower);
+                    }
+                }
+            }
+                //순서6-2. 현재총알이 0발일 경우 총을 쏘는 대신에 재장전을 한다.
+            else if(!isReloading)
+            {
+                StartCoroutine(ReloadBullet());
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (!isReloading)
+            {
+                StartCoroutine(ReloadBullet());
             }
         }
 
         //순서5-1. 휠클릭을 누른다.
-        if (Input.GetMouseButtonDown(2))
+        if (Input.GetMouseButtonDown(1))
         {
             if (!zoom)
             {
@@ -142,8 +190,11 @@ public class PlayerFire : MonoBehaviour
                 //순서5-3. 조준UI를 활성화한다.
                 zoomUI.SetActive(true);
                 //순서5-5. 조준 카메라를 활성화하고 메인 카메라를 비활성화한다.
-                mainCamera.SetActive(false);
                 zoomCamera.SetActive(true);
+                zoomCamera.transform.forward = mainCamera.transform.forward;
+                zoomCamera.GetComponent<CamRotate>().mX = mainCamera.GetComponent<CamRotate>().mX;
+                zoomCamera.GetComponent<CamRotate>().mY = mainCamera.GetComponent<CamRotate>().mY;
+                mainCamera.SetActive(false);
 
             }
             //순서5-6. 다시 휠클릭을 누른다.
@@ -157,9 +208,34 @@ public class PlayerFire : MonoBehaviour
                 //순서5-8. 조준 UI를 비활성화한다.
                 zoomUI.SetActive(false);
                 //순서5-10. 조준 카메라를 비활성화하고 메인 카메라를 활성화한다.
-                zoomCamera.SetActive(false);
                 mainCamera.SetActive(true);
+                mainCamera.transform.forward = zoomCamera.transform.forward;
+                mainCamera.GetComponent<CamRotate>().mX = zoomCamera.GetComponent<CamRotate>().mX;
+                mainCamera.GetComponent<CamRotate>().mY = zoomCamera.GetComponent<CamRotate>().mY;
+                zoomCamera.SetActive(false);
             }
         }
+
+        bulletText.text = currentBullet.ToString() + "/" + maxBullet.ToString();
+    }
+
+    IEnumerator ReloadBullet()
+    {
+        isReloading = true;
+        //순서6-3. 재장전이 끝나면 모든총알에서 30발만큼 줄어들고 현재총알이 30발이 된다.
+        maxBullet += currentBullet;
+        currentBullet = 0;
+        yield return new WaitForSeconds(2f);
+        if(maxBullet < 30)
+        {
+            currentBullet = maxBullet;
+            maxBullet = 0;
+        }
+        else
+        {
+            maxBullet -= 30;
+            currentBullet = 30;
+        }
+        isReloading = false;
     }
 }

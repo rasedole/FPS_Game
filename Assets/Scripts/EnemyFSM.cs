@@ -61,7 +61,7 @@ public class EnemyFSM : MonoBehaviour
     //속성1 : 에네미의 상태, 캐릭터컨트롤러, 이동속도, 플레이어 게임오브젝트, 공격력, 초기 위치, HP
     private EnemyState enemyState;
     private CharacterController enemyController;
-    private float speed = 7.5f;
+    private float speed = 9.5f;
     private GameObject player;
     private int attackPower = 2;
     private Vector3 originPosition;
@@ -148,6 +148,7 @@ public class EnemyFSM : MonoBehaviour
     {
         //순서1-2. 이동 상태일 때는 플레이어를 따라간다.
         Vector3 dir = (playerTransform.position - transform.position).normalized;
+        dir.y = 0;
         enemyController.Move(speed * Time.deltaTime * dir);
         transform.forward = dir;
 
