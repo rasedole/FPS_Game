@@ -100,6 +100,11 @@ public class PlayerMove : MonoBehaviour
         //순서5-1. HP를 슬라이더에 적용한다.
         healthPointSlider.value = (float)healthPoint / (float)maxHealthPoint;
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            GameManager.Instance.OpenOptionWindow();
+        }
+
         if (GameManager.Instance.state != GameManager.GameState.Start)
         {
             return;
@@ -156,26 +161,27 @@ public class PlayerMove : MonoBehaviour
 
         //순서2-2. 캐릭터 컨트롤러로 나를 이동시키고 싶다.
         controller.Move(speed * Time.deltaTime * direction);
-
-
     }
 
     //순서6-1. 적의 공격을 받는다.
     public void GetDamage(int damage)
     {
-        healthPoint -= damage;
-
-        if (healthPoint > 0)
+        if(healthPoint > 0)
         {
-            //순서6-2. hitImage를 True로 한다.
-            StartCoroutine(HitEffect());
-        }
+            healthPoint -= damage;
 
-        //순서7-1. 적의 공격을 받아 죽는다.
-        else
-        {
-            //순서7-2. hitImage의 알파값을 255로 만든다.
-            StartCoroutine(DeadEffect());
+            if (healthPoint > 0)
+            {
+                //순서6-2. hitImage를 True로 한다.
+                StartCoroutine(HitEffect());
+            }
+
+            //순서7-1. 적의 공격을 받아 죽는다.
+            else
+            {
+                //순서7-2. hitImage의 알파값을 255로 만든다.
+                StartCoroutine(DeadEffect());
+            }
         }
     }
 

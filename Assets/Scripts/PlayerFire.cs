@@ -166,7 +166,7 @@ public class PlayerFire : MonoBehaviour
                             zoom = true;
 
                             //순서5-4. 그 외의 UI를 비활성화 한다.
-                            playerUI1.SetActive(false);
+                            //playerUI1.SetActive(false);
                             playerUI2.SetActive(false);
 
                             Camera.main.fieldOfView = 15;
@@ -174,7 +174,7 @@ public class PlayerFire : MonoBehaviour
                             gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed /= 4;
 
                             ////순서5-3. 조준UI를 활성화한다.
-                            zoomUI.SetActive(true);
+                            //zoomUI.SetActive(true);
 
                             ////순서5-5. 조준 카메라를 활성화하고 메인 카메라를 비활성화한다.
                             //zoomCamera.SetActive(true);
@@ -264,9 +264,9 @@ public class PlayerFire : MonoBehaviour
 
                 //순서2-2. 레이를 생성하고 발사 위치와 방향을 설정한다.
                 //if (Camera.main != null)
-                {
-                    ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-                }
+                //{
+                ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+                //}
                 //else
                 //{
                 //    ray = new Ray(zoomCamera.transform.position, zoomCamera.transform.forward);

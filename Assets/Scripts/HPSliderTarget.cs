@@ -12,6 +12,6 @@ public class HPSliderTarget : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.forward = target.transform.forward;
+        transform.forward = Camera.main.transform.forward;
     }
 }
