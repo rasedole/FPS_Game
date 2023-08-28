@@ -78,7 +78,7 @@ public class PlayerFire : MonoBehaviour
     public int weaponPower = 3;
 
     //속성5 : 조준UI, 플레이어 UI, 조준 카메라, 줌 bool 변수, 메인 카메라
-    public GameObject zoomUI;
+    //public GameObject zoomUI;
     public GameObject playerUI1;
     public GameObject playerUI2;
     //public GameObject zoomCamera;
@@ -191,7 +191,7 @@ public class PlayerFire : MonoBehaviour
                             //순서5-7. 줌 변수를 false로 한다.
                             zoom = false;
                             //순서5-9. 그 외의 UI를 활성화한다.
-                            playerUI1.SetActive(true);
+                            //playerUI1.SetActive(true);
                             playerUI2.SetActive(true);
 
                             Camera.main.fieldOfView = 60;
@@ -199,7 +199,7 @@ public class PlayerFire : MonoBehaviour
                             gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed *= 4;
 
                             ////순서5-8. 조준 UI를 비활성화한다.
-                            zoomUI.SetActive(false);
+                            //zoomUI.SetActive(false);
 
                             ////순서5-10. 조준 카메라를 비활성화하고 메인 카메라를 활성화한다.
                             //mainCamera.SetActive(true);

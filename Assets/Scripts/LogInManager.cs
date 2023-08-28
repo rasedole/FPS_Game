@@ -40,7 +40,7 @@ public class LogInManager : MonoBehaviour
             if(PlayerPrefs.GetString(id.text) == password.text)
             {
                 SceneManager.LoadScene(1);
-                authText.text = "Log In Sucessful!";
+                //authText.text = "Log In Sucessful!";
                 return;
             }
         }
