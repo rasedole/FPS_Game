@@ -56,7 +56,10 @@ using Unity.VisualScripting;
 //순서9-2. 스나이퍼모드일 때 우클릭을 누르면 줌을 한다.
 //순서9-3. 1번을 누르면 노멀모드, 2번을 누르면 스나이퍼모드로 설정한다.
 
-
+//목적10 : 총을 쏠 때 마다 일정시간이 지나면 사라지는 이펙트를 랜덤하게 발생시킨다.
+//속성10 : 이펙트 게임오브젝트
+//순서10-1. 총을 발사한다.
+//순서10-2. 랜덤하게 이펙트를 발생시킨다.
 
 public class PlayerFire : MonoBehaviour
 {
@@ -101,6 +104,9 @@ public class PlayerFire : MonoBehaviour
         Sniper
     }
     WeaponMode weaponMode = WeaponMode.Normal;
+
+    //속성10 : 이펙트 게임오브젝트
+    public GameObject[] fireFlashEffect;
 
 
     public TMP_Text weaponModeText;
@@ -249,6 +255,10 @@ public class PlayerFire : MonoBehaviour
                 {
                     animator.SetTrigger("Attack");
                 }
+
+                //순서10-1. 총을 발사한다.
+                StartCoroutine(FireFlashEffect(0.05f));
+
                 //순서6-1. 총을 쏘면 총알이 줄어든다.
                 currentBullet--;
 
@@ -320,5 +330,14 @@ public class PlayerFire : MonoBehaviour
         }
         isReloading = false;
         reloadUI.gameObject.SetActive(false);
+    }
+
+    IEnumerator FireFlashEffect(float duration)
+    {
+        //순서10-2. 랜덤하게 이펙트를 발생시킨다.
+        int rand = Random.Range(0, fireFlashEffect.Length);
+        fireFlashEffect[rand].SetActive(true);
+        yield return new WaitForSeconds(duration);
+        fireFlashEffect[rand].SetActive(false);
     }
 }

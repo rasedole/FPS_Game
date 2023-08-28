@@ -52,6 +52,9 @@ using UnityEngine.UI;
 
 //목적7 : 네비게이션 에이전트의 초기 속도를 Agent의 속도로 저장해준다.
 
+//목적8 : 에이전트가 NavMeshLink에 올라가고 내려가는지 확인하여 특정 점프 애니메이션을 넣고 싶다.
+
+
 
 
 public class EnemyFSM : MonoBehaviour
@@ -93,6 +96,7 @@ public class EnemyFSM : MonoBehaviour
 
     //속성6 : 네비게이션 에이전트
     private NavMeshAgent navMeshAgent;
+
 
     // Start is called before the first frame update
     void Start()
@@ -171,6 +175,14 @@ public class EnemyFSM : MonoBehaviour
         //transform.forward = dir;
         //navMeshAgent.isStopped = true;
         //navMeshAgent.ResetPath();
+        if (navMeshAgent.isOnOffMeshLink)
+        {
+            object navMeshOwner = navMeshAgent.navMeshOwner;
+            GameObject navMeshGO = (navMeshOwner as Component).gameObject;
+
+            print(navMeshGO.gameObject.tag);
+        }
+
         navMeshAgent.stoppingDistance = attackDistance;
         navMeshAgent.SetDestination(player.transform.position);
 
