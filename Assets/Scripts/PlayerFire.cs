@@ -78,9 +78,10 @@ public class PlayerFire : MonoBehaviour
     public int weaponPower = 3;
 
     //속성5 : 조준UI, 플레이어 UI, 조준 카메라, 줌 bool 변수, 메인 카메라
-    //public GameObject zoomUI;
+    public GameObject zoomUI;
     public GameObject playerUI1;
     public GameObject playerUI2;
+    public GameObject sniperUI;
     //public GameObject zoomCamera;
     public bool zoom = false;
     public GameObject mainCamera;
@@ -96,6 +97,9 @@ public class PlayerFire : MonoBehaviour
 
     //속성8 : 재장전UI
     public TMP_Text reloadUI;
+
+    public GameObject rifleImage;
+    public GameObject sniperImage;
 
     //속성9 : 무기모드 열거형 변수
     public enum WeaponMode
@@ -168,13 +172,14 @@ public class PlayerFire : MonoBehaviour
                             //순서5-4. 그 외의 UI를 비활성화 한다.
                             //playerUI1.SetActive(false);
                             playerUI2.SetActive(false);
+                            sniperUI.SetActive(false);
 
                             Camera.main.fieldOfView = 15;
 
                             gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed /= 4;
 
                             ////순서5-3. 조준UI를 활성화한다.
-                            //zoomUI.SetActive(true);
+                            zoomUI.SetActive(true);
 
                             ////순서5-5. 조준 카메라를 활성화하고 메인 카메라를 비활성화한다.
                             //zoomCamera.SetActive(true);
@@ -193,13 +198,14 @@ public class PlayerFire : MonoBehaviour
                             //순서5-9. 그 외의 UI를 활성화한다.
                             //playerUI1.SetActive(true);
                             playerUI2.SetActive(true);
+                            sniperUI.SetActive(true);
 
                             Camera.main.fieldOfView = 60;
 
                             gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed *= 4;
 
                             ////순서5-8. 조준 UI를 비활성화한다.
-                            //zoomUI.SetActive(false);
+                            zoomUI.SetActive(false);
 
                             ////순서5-10. 조준 카메라를 비활성화하고 메인 카메라를 활성화한다.
                             //mainCamera.SetActive(true);
@@ -224,16 +230,21 @@ public class PlayerFire : MonoBehaviour
                 weaponPower -= 10;
             }
             weaponMode = WeaponMode.Normal;
+            rifleImage.SetActive(true);
+            sniperImage.SetActive(false);
             if (zoom)
             {
                 zoom = false;
-                playerUI1.SetActive(true);
+                //playerUI1.SetActive(true);
                 playerUI2.SetActive(true);
+                zoomUI.SetActive(false);
 
                 Camera.main.fieldOfView = 60;
 
                 gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed *= 4;
             }
+            playerUI1.SetActive(true);
+            sniperUI.SetActive(false);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2)) 
         {
@@ -243,6 +254,11 @@ public class PlayerFire : MonoBehaviour
                 weaponPower += 10;
             }
             weaponMode = WeaponMode.Sniper;
+            rifleImage.SetActive(false);
+            sniperImage.SetActive(true);
+
+            playerUI1.SetActive(false);
+            sniperUI.SetActive(true);
         }
 
 
