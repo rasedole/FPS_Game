@@ -778,8 +778,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09f31d96c1b2bca4eba656942695040c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scenbeNumber: 2
-  loadingslider: {fileID: 1166809663}
+  sceneNumber: 2
+  loadingSlider: {fileID: 1166809663}
   loadingText: {fileID: 1426169581}
 --- !u!1 &1917994989
 GameObject:

@@ -21,7 +21,7 @@ public class LoadingNextScene : MonoBehaviour
     public int sceneNumber = 2;
 
     //속성2 : 로딩 슬라이더, 로딩 텍스트
-    public Slider loadingslider;
+    public Slider loadingSlider;
     public TMP_Text loadingText;
 
     private void Start()
@@ -38,11 +38,11 @@ public class LoadingNextScene : MonoBehaviour
         while(!asyncOperation.isDone)
         {
             //순서2-1. 씬의 로딩 진행률을 슬라이더와 텍스트로 표현한다.
-            loadingslider.value = asyncOperation.progress;
+            loadingSlider.value = asyncOperation.progress;
             loadingText.text = (asyncOperation.progress * 100).ToString() + "%";
 
             //순서2-2. 씬의 진행률이 90% 이상일 때 로딩중인 씬을 표시한다.
-            if(asyncOperation.progress >= 90)
+            if(asyncOperation.progress >= 0.9f)
             {
                 asyncOperation.allowSceneActivation = true;
             }
