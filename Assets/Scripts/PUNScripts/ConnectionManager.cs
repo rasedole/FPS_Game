@@ -39,4 +39,9 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
 
         SceneManager.LoadScene("LobbyScene");
     }
+
+    public void SoloPlay()
+    {
+        SceneManager.LoadScene("LoadingScene");
+    }
 }

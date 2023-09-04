@@ -18,7 +18,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     //속성1 : 방 이름을 넣을 InputField, 최대 인원수
     [SerializeField] protected TMP_InputField roomNameInput;
-    public int maxPlayerNumber = 5;
+    public int maxPlayerNumber = 3;
+
+    public GameObject mainGameManager;
 
     public void CreatRoom()
     {
@@ -46,6 +48,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         base.OnCreatedRoom();
         print(System.Reflection.MethodBase.GetCurrentMethod().Name);
         logText.text += ("방을 만들었습니다.\n");
+
+        DontDestroyOnLoad(mainGameManager);
+        mainGameManager.SetActive(true);
     }
 
     public override void OnJoinedRoom()
@@ -53,8 +58,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         base.OnJoinedRoom();
         print(System.Reflection.MethodBase.GetCurrentMethod().Name);
         logText.text += ("callback - 방에 입장하였습니다.\n");
-
-        SceneManager.LoadScene("GameScene");
+                
+        SceneManager.LoadScene("LoadingScene");
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)

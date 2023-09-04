@@ -5,6 +5,9 @@ using TMPro;
 using System;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
+using Photon.Pun;
+using Photon.Realtime;
+using Photon.Pun.UtilityScripts;
 
 //목적1 : 게임의 상태(Ready, Start, GameOver)를 구별하고, 게임의 시작과 끝을 Text UI로 표현한다.
 //속성1 : TMPro, Text UI, 게임 상태 리스트, 현재 게임 상태
@@ -36,6 +39,10 @@ using Unity.VisualScripting;
 //순서6-1. 게임 오버 당한다.
 //순서6-2. 버튼들을 활성화 한다.
 
+//목적7 : 게임이 시작하면 Player를 생성한다.
+//속성7 : Player 게임오브젝트 Photon View
+
+//목적8 : 클라이언트가 접속되면 Photon Network에 접속한 플레이어들을 확인해서 내 번호를 지정한다.
 
 public class GameManager : MonoBehaviour
 {
@@ -62,11 +69,24 @@ public class GameManager : MonoBehaviour
     public GameObject optionUI;
     private GameState preState;
 
+    //속성7 : Player 게임오브젝트 Photon View
+    public PhotonView playerPhotonView;
+    private int myPlayerNumber = 0;
+
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+        }
+
+        Player[] players = PhotonNetwork.PlayerList;
+        foreach(var p in players)
+        {
+            if(p != PhotonNetwork.LocalPlayer)
+            {
+                myPlayerNumber++;
+            }
         }
     }
 
@@ -87,8 +107,14 @@ public class GameManager : MonoBehaviour
 
     IEnumerator CountDownText()
     {
-        //순서2-2. 3초 카운트다운을 시작한다.
-        yield return new WaitForSeconds(2);
+        while (!MainGameManager.Instance.isGameStarted)
+        {
+            //순서2-2. 3초 카운트다운을 시작한다.
+            yield return new WaitForSeconds(2);
+        }
+
+        PhotonNetwork.Instantiate(playerPhotonView.name, MainGameManager.Instance.spawnPoints[myPlayerNumber].position, Quaternion.identity);
+
         stateTextUI.text = "3";
         yield return new WaitForSeconds(1);
         stateTextUI.text = "2";
@@ -126,7 +152,7 @@ public class GameManager : MonoBehaviour
         restartButton.SetActive(true);
         exitButton.SetActive(true);
 
-        GameObject.Find("HP Bar").SetActive(false);
+        GameObject.Find("Player HP Bar").SetActive(false);
         GameObject.Find("Bullet (TMP)").SetActive(false);
         GameObject.Find("WeaponMode (TMP)").SetActive(false);
     }

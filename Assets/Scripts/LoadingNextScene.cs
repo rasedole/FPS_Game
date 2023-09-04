@@ -18,7 +18,7 @@ using UnityEngine.UI;
 public class LoadingNextScene : MonoBehaviour
 {
     //속성1 : 다음 씬의 번호
-    public int sceneNumber = 2;
+    public string sceneName = "FPSGame";
 
     //속성2 : 로딩 슬라이더, 로딩 텍스트
     public Slider loadingSlider;
@@ -26,12 +26,12 @@ public class LoadingNextScene : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(ASyncNextScene(sceneNumber));
+        StartCoroutine(ASyncNextScene(sceneName));
     }
 
-    IEnumerator ASyncNextScene(int num)
+    IEnumerator ASyncNextScene(string name)
     {
-        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(num);
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(name);
 
         asyncOperation.allowSceneActivation = false;
 
@@ -45,6 +45,8 @@ public class LoadingNextScene : MonoBehaviour
             if(asyncOperation.progress >= 0.9f)
             {
                 asyncOperation.allowSceneActivation = true;
+
+                MainGameManager.Instance.StartTimer();
             }
             yield return new WaitForSeconds(3f);
         }
