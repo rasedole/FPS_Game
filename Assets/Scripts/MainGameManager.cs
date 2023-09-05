@@ -52,6 +52,5 @@ public class MainGameManager : MonoBehaviour
     public void StartTimer()
     {
         StartCoroutine(StartGame());
-
     }
 }

@@ -103,8 +103,9 @@ public class EnemyFSM : MonoBehaviour
     {
         enemyState = EnemyState.Idle;
         enemyController = GetComponent<CharacterController>();
-        playerTransform = GameObject.Find("Player").transform;
-        player = GameObject.Find("Player");
+        player = GameManager.Instance.player.gameObject;
+        //player = GameObject.Find("Player");
+        playerTransform = player.transform;
         originPosition = transform.position;
         maxHealthPoint = healthPoint;
         enemyAnimator = GetComponentInChildren<Animator>();
@@ -112,8 +113,6 @@ public class EnemyFSM : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = speed;
         navMeshAgent.ResetPath();
-
-
     }
 
     // Update is called once per frame

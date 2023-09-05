@@ -71,7 +71,7 @@ public class PlayerFire : MonoBehaviour
 
     //속성2 : 레이, 피격효과 게임오브젝트, 이펙트의 파티클 시스템
     protected Ray ray;
-    public GameObject hitEffect;
+    protected GameObject hitEffect;
     protected ParticleSystem particle;
 
     //속성3 : 공격력
@@ -117,11 +117,13 @@ public class PlayerFire : MonoBehaviour
 
     private void Start()
     {
+        hitEffect = GameObject.Find("Stone_BulletImpact");
         particle = hitEffect.GetComponent<ParticleSystem>();
         bulletText.text = currentBullet.ToString() + "/" + maxBullet.ToString();
         animator = GetComponentInChildren<Animator>();
         weaponModeText.text = "Normal";
         //zoomCamera.GetComponent<CamRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed / 4;
+
     }
 
 

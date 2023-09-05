@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
     public GameState state = GameState.Ready;
 
     //속성3 : 플레이어 HP가 담겨있는 PlayerMove
-    PlayerMove playerHP;
+    public PlayerMove player;
 
     //속성4 : 플레이어의 애니메이터 컴포넌트
     private Animator animator;
@@ -72,6 +72,8 @@ public class GameManager : MonoBehaviour
     //속성7 : Player 게임오브젝트 Photon View
     public PhotonView playerPhotonView;
     private int myPlayerNumber = 0;
+
+    public GameObject enemyManagers;
 
     private void Awake()
     {
@@ -99,10 +101,6 @@ public class GameManager : MonoBehaviour
 
         //순서2-1. 게임이 시작된다.
         StartCoroutine(CountDownText());
-
-        playerHP = GameObject.Find("Player").GetComponent<PlayerMove>();
-
-        animator = GameObject.Find("Player").GetComponentInChildren<Animator>();
     }
 
     IEnumerator CountDownText()
@@ -113,7 +111,13 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(2);
         }
 
-        PhotonNetwork.Instantiate(playerPhotonView.name, MainGameManager.Instance.spawnPoints[myPlayerNumber].position, Quaternion.identity);
+        GameObject playerObj = PhotonNetwork.Instantiate(playerPhotonView.name, MainGameManager.Instance.spawnPoints[myPlayerNumber].position, Quaternion.identity);
+        player = playerObj.GetComponent<PlayerMove>();
+
+        //player = GameObject.Find("Player").GetComponent<PlayerMove>();
+
+        animator = player.GetComponentInChildren<Animator>();
+        enemyManagers.SetActive(true);
 
         stateTextUI.text = "3";
         yield return new WaitForSeconds(1);
@@ -131,6 +135,8 @@ public class GameManager : MonoBehaviour
         //순서2-5. Text를 안 보이게 한다.
         yield return new WaitForSeconds(0.5f);
         stateTextUI.gameObject.SetActive(false);
+
+
     }
 
     void GameOver()
@@ -160,8 +166,13 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!MainGameManager.Instance.isGameStarted)
+        {
+            return;
+        }
+
         //순서3-1. 플레이어의 HP가 0 이하가 된다.
-        if (playerHP.healthPoint <= 0)
+        if (player.healthPoint <= 0)
         {
             GameOver();
         }

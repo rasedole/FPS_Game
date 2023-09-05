@@ -11,9 +11,12 @@ using UnityEngine.SceneManagement;
 public class ConnectionManager : MonoBehaviourPunCallbacks
 {
     public TMP_Text logText;
-    
-    public void Connect() => PhotonNetwork.ConnectUsingSettings();
 
+    public void Connect()
+    {
+        PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.ConnectUsingSettings();
+    }
     public override void OnConnected()
     {
         base.OnConnected();

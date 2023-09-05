@@ -20,7 +20,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] protected TMP_InputField roomNameInput;
     public int maxPlayerNumber = 3;
 
-    public GameObject mainGameManager;
+    public PhotonView mainGameManager;
 
     public void CreatRoom()
     {
@@ -48,9 +48,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         base.OnCreatedRoom();
         print(System.Reflection.MethodBase.GetCurrentMethod().Name);
         logText.text += ("방을 만들었습니다.\n");
-
-        DontDestroyOnLoad(mainGameManager);
-        mainGameManager.SetActive(true);
+        GameObject mainGameManagerObj = PhotonNetwork.Instantiate(mainGameManager.name, Vector3.zero, Quaternion.identity);
+        DontDestroyOnLoad(mainGameManagerObj);
     }
 
     public override void OnJoinedRoom()
