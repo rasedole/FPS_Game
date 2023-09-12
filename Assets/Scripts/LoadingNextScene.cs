@@ -45,8 +45,6 @@ public class LoadingNextScene : MonoBehaviour
             if(asyncOperation.progress >= 0.9f)
             {
                 asyncOperation.allowSceneActivation = true;
-
-                MainGameManager.Instance.StartTimer();
             }
             yield return new WaitForSeconds(3f);
         }

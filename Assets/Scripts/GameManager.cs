@@ -82,39 +82,40 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
 
-        Player[] players = PhotonNetwork.PlayerList;
-        foreach(var p in players)
-        {
-            if(p != PhotonNetwork.LocalPlayer)
-            {
-                myPlayerNumber++;
-            }
-        }
+
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        Player[] players = PhotonNetwork.PlayerList;
+        foreach (var p in players)
+        {
+            if (p != PhotonNetwork.LocalPlayer)
+            {
+                myPlayerNumber++;
+            }
+        }
+
         //시작 시 UI 텍스트를 READY로, 색을 주황색으로 변경
         stateTextUI.text = "READY";
         stateTextUI.color = new Color32(255, 150, 0, 255);
+        
+        SetSpawnPoints();
 
         //순서2-1. 게임이 시작된다.
         StartCoroutine(CountDownText());
+
     }
 
     IEnumerator CountDownText()
     {
-        while (!MainGameManager.Instance.isGameStarted)
-        {
-            //순서2-2. 3초 카운트다운을 시작한다.
-            yield return new WaitForSeconds(2);
-        }
-
-        GameObject playerObj = PhotonNetwork.Instantiate(playerPhotonView.name, MainGameManager.Instance.spawnPoints[myPlayerNumber].position, Quaternion.identity);
-        player = playerObj.GetComponent<PlayerMove>();
-
+        yield return new WaitUntil(() => PhotonNetwork.InRoom);
         //player = GameObject.Find("Player").GetComponent<PlayerMove>();
+
+        GameObject playerObj = PhotonNetwork.Instantiate(playerPhotonView.name, spawnPoints[myPlayerNumber].position, Quaternion.identity);
+
+        player = playerObj.GetComponent<PlayerMove>();
 
         animator = player.GetComponentInChildren<Animator>();
         enemyManagers.SetActive(true);
@@ -166,10 +167,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!MainGameManager.Instance.isGameStarted)
-        {
-            return;
-        }
 
         //순서3-1. 플레이어의 HP가 0 이하가 된다.
         if (player.healthPoint <= 0)
@@ -215,5 +212,18 @@ public class GameManager : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
+    }
+
+    public Transform[] spawnPoints;
+    void SetSpawnPoints()
+    {
+        Transform spawnPointsParent = GameObject.Find("GroupSpawnPoint").transform;
+
+        spawnPoints = new Transform[spawnPointsParent.childCount];
+
+        for (int i = 0; i < spawnPointsParent.childCount; i++)
+        {
+            spawnPoints[i] = spawnPointsParent.GetChild(i);
+        }
     }
 }

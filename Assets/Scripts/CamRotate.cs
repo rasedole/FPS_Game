@@ -27,7 +27,7 @@ public class CamRotate : MonoBehaviour
 
     //속성2 : Z회전, 현재시간 목표시간
     private float rotateZ = 0;
-    private float currentTime = 0;
+    //private float currentTime = 0;
     public float moveTime = 0.5f;
 
     public GameObject player;

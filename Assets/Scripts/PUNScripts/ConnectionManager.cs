@@ -15,6 +15,10 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
     public void Connect()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
+
+        PhotonNetwork.SendRate = 30;
+        PhotonNetwork.SerializationRate = 30;
+        
         PhotonNetwork.ConnectUsingSettings();
     }
     public override void OnConnected()

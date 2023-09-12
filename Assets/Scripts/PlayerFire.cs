@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Unity.VisualScripting;
+using Photon.Pun;
 
 //목적1 : 마우스 기능키를 누르면 폭탄을 특정방향으로 발사한다.
 //속성1 : 폭탄 게임오브젝트, 발사 위치, 방향, 힘
@@ -61,7 +62,7 @@ using Unity.VisualScripting;
 //순서10-1. 총을 발사한다.
 //순서10-2. 랜덤하게 이펙트를 발생시킨다.
 
-public class PlayerFire : MonoBehaviour
+public class PlayerFire : MonoBehaviour, IPunObservable
 {
     //속성1 : 폭탄 게임오브젝트, 발사 위치, 방향, 힘
     public GameObject bomb;
@@ -115,6 +116,8 @@ public class PlayerFire : MonoBehaviour
 
     public TMP_Text weaponModeText;
 
+    PhotonView photonView;
+
     private void Start()
     {
         hitEffect = GameObject.Find("Stone_BulletImpact");
@@ -124,208 +127,424 @@ public class PlayerFire : MonoBehaviour
         weaponModeText.text = "Normal";
         //zoomCamera.GetComponent<CamRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed / 4;
 
+        photonView = GetComponent<PhotonView>();
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance.state != GameManager.GameState.Start)
+        if (photonView.IsMine)
         {
-            return;
-        }
-
-        //순서1-1. 마우스 기능키를 누른다.
-        if (Input.GetMouseButtonDown(1))
-        {
-            switch (weaponMode)
+            if (GameManager.Instance.state != GameManager.GameState.Start)
             {
-                //순서9-1. 노멀모드일 때 우클릭을 누르면 수류탄을 던진다.
-                case WeaponMode.Normal:
-                    //순서1-2. 폭탄 오브젝트를 생성한다.
-                    GameObject bombGO = Instantiate(bomb);
+                return;
+            }
 
-                    //순서1-3. 폭탄 오브젝트의 발사 위치를 설정한다.
-                    bombGO.transform.position = firePosition.transform.position;
+            //순서1-1. 마우스 기능키를 누른다.
+            if (Input.GetMouseButtonDown(1))
+            {
+                photonView.RPC("SendMouseAction",RpcTarget.All, 1);
+                switch (weaponMode)
+                {
+                    //순서9-1. 노멀모드일 때 우클릭을 누르면 수류탄을 던진다.
+                    case WeaponMode.Normal:
+                        //순서1-2. 폭탄 오브젝트를 생성한다.
+                        GameObject bombGO = Instantiate(bomb);
 
-                    //순서1-4. 폭탄 오브젝트를 카메라방향으로 힘에 비례해서 발사한다.
-                    Rigidbody rigidbody = bombGO.GetComponent<Rigidbody>();
-                    //if (Camera.main != null)
+                        //순서1-3. 폭탄 오브젝트의 발사 위치를 설정한다.
+                        bombGO.transform.position = firePosition.transform.position;
+
+                        //순서1-4. 폭탄 오브젝트를 카메라방향으로 힘에 비례해서 발사한다.
+                        Rigidbody rigidbody = bombGO.GetComponent<Rigidbody>();
+                        //if (Camera.main != null)
+                        {
+                            direction = Camera.main.transform.forward;
+                        }
+                        //else
+                        //{
+                        //    direction = zoomCamera.transform.forward;
+                        //}
+                        rigidbody.AddForce(direction * power, ForceMode.Impulse);
+                        break;
+
+                    //순서9-2. 스나이퍼모드일 때 우클릭을 누르면 줌을 한다.
+                    case WeaponMode.Sniper:
+                        //순서5-1. 우클릭을 누른다.
+                        if (Input.GetMouseButtonDown(1))
+                        {
+                            if (!zoom)
+                            {
+                                //순서5-2. 줌 변수를 true로 한다.
+                                zoom = true;
+
+                                //순서5-4. 그 외의 UI를 비활성화 한다.
+                                //playerUI1.SetActive(false);
+                                playerUI2.SetActive(false);
+                                sniperUI.SetActive(false);
+
+                                Camera.main.fieldOfView = 15;
+
+                                gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed /= 4;
+
+                                ////순서5-3. 조준UI를 활성화한다.
+                                zoomUI.SetActive(true);
+
+                                ////순서5-5. 조준 카메라를 활성화하고 메인 카메라를 비활성화한다.
+                                //zoomCamera.SetActive(true);
+                                //zoomCamera.transform.forward = mainCamera.transform.forward;
+                                //zoomCamera.GetComponent<CamRotate>().mX = mainCamera.GetComponent<CamRotate>().mX;
+                                //zoomCamera.GetComponent<CamRotate>().mY = mainCamera.GetComponent<CamRotate>().mY;
+                                //mainCamera.SetActive(false);
+
+                                //gameObject.GetComponent<PlayerRotate>().rotateSpeed = zoomCamera.GetComponent<CamRotate>().rotateSpeed;
+                            }
+                            //순서5-6. 다시 우클릭을 누른다.
+                            else
+                            {
+                                //순서5-7. 줌 변수를 false로 한다.
+                                zoom = false;
+                                //순서5-9. 그 외의 UI를 활성화한다.
+                                //playerUI1.SetActive(true);
+                                playerUI2.SetActive(true);
+                                sniperUI.SetActive(true);
+
+                                Camera.main.fieldOfView = 60;
+
+                                gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed *= 4;
+
+                                ////순서5-8. 조준 UI를 비활성화한다.
+                                zoomUI.SetActive(false);
+
+                                ////순서5-10. 조준 카메라를 비활성화하고 메인 카메라를 활성화한다.
+                                //mainCamera.SetActive(true);
+                                //mainCamera.transform.forward = zoomCamera.transform.forward;
+                                //mainCamera.GetComponent<CamRotate>().mX = zoomCamera.GetComponent<CamRotate>().mX;
+                                //mainCamera.GetComponent<CamRotate>().mY = zoomCamera.GetComponent<CamRotate>().mY;
+                                //zoomCamera.SetActive(false);
+
+                                //gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            //순서9-3. 1번을 누르면 노멀모드, 2번을 누르면 스나이퍼모드로 설정한다.
+            else if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                photonView.RPC("SendMouseAction", RpcTarget.All, 2);
+                weaponModeText.text = "Normal";
+                if (weaponMode == WeaponMode.Sniper)
+                {
+                    weaponPower -= 10;
+                }
+                weaponMode = WeaponMode.Normal;
+                rifleImage.SetActive(true);
+                sniperImage.SetActive(false);
+                if (zoom)
+                {
+                    zoom = false;
+                    //playerUI1.SetActive(true);
+                    playerUI2.SetActive(true);
+                    zoomUI.SetActive(false);
+
+                    Camera.main.fieldOfView = 60;
+
+                    gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed *= 4;
+                }
+                playerUI1.SetActive(true);
+                sniperUI.SetActive(false);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                photonView.RPC("SendMouseAction", RpcTarget.All, 3);
+                weaponModeText.text = "Sniper";
+                if (weaponMode == WeaponMode.Normal)
+                {
+                    weaponPower += 10;
+                }
+                weaponMode = WeaponMode.Sniper;
+                rifleImage.SetActive(false);
+                sniperImage.SetActive(true);
+
+                playerUI1.SetActive(false);
+                sniperUI.SetActive(true);
+            }
+
+
+            //순서2-1. 마우스 좌클릭을 누른다.
+            else if (Input.GetMouseButtonDown(0))
+            {
+                photonView.RPC("SendMouseAction", RpcTarget.All, 0);
+                if (currentBullet > 0)
+                {
+                    if (animator.GetFloat("MoveMotion") == 0)
                     {
-                        direction = Camera.main.transform.forward;
+                        animator.SetTrigger("Attack");
                     }
+
+                    //순서10-1. 총을 발사한다.
+                    StartCoroutine(FireFlashEffect(0.05f));
+
+                    //순서6-1. 총을 쏘면 총알이 줄어든다.
+                    currentBullet--;
+
+                    //순서2-2. 레이를 생성하고 발사 위치와 방향을 설정한다.
+                    //if (Camera.main != null)
+                    //{
+                    ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+                    //}
                     //else
                     //{
-                    //    direction = zoomCamera.transform.forward;
+                    //    ray = new Ray(zoomCamera.transform.position, zoomCamera.transform.forward);
                     //}
-                    rigidbody.AddForce(direction * power, ForceMode.Impulse);
-                    break;
 
-                //순서9-2. 스나이퍼모드일 때 우클릭을 누르면 줌을 한다.
-                case WeaponMode.Sniper:
-                    //순서5-1. 우클릭을 누른다.
-                    if (Input.GetMouseButtonDown(1))
+                    //순서2-3. 레이가 부딫힌 대상의 정보를 저장할 수 있는 변수를 만든다.
+                    RaycastHit hitInfo = new RaycastHit();
+
+                    //순서2-4. 레이와 부딪힌 물체가 있으면 그 위치에 피격 효과를 만든다.
+                    if (Physics.Raycast(ray, out hitInfo))
                     {
-                        if (!zoom)
+                        hitEffect.transform.position = hitInfo.point;
+                        hitEffect.transform.forward = hitInfo.normal;
+                        particle.Play();
+
+                        //순서3-1. 레이가 에네미와 부딫힌다.
+                        if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
                         {
-                            //순서5-2. 줌 변수를 true로 한다.
-                            zoom = true;
-
-                            //순서5-4. 그 외의 UI를 비활성화 한다.
-                            //playerUI1.SetActive(false);
-                            playerUI2.SetActive(false);
-                            sniperUI.SetActive(false);
-
-                            Camera.main.fieldOfView = 15;
-
-                            gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed /= 4;
-
-                            ////순서5-3. 조준UI를 활성화한다.
-                            zoomUI.SetActive(true);
-
-                            ////순서5-5. 조준 카메라를 활성화하고 메인 카메라를 비활성화한다.
-                            //zoomCamera.SetActive(true);
-                            //zoomCamera.transform.forward = mainCamera.transform.forward;
-                            //zoomCamera.GetComponent<CamRotate>().mX = mainCamera.GetComponent<CamRotate>().mX;
-                            //zoomCamera.GetComponent<CamRotate>().mY = mainCamera.GetComponent<CamRotate>().mY;
-                            //mainCamera.SetActive(false);
-
-                            //gameObject.GetComponent<PlayerRotate>().rotateSpeed = zoomCamera.GetComponent<CamRotate>().rotateSpeed;
-                        }
-                        //순서5-6. 다시 우클릭을 누른다.
-                        else
-                        {
-                            //순서5-7. 줌 변수를 false로 한다.
-                            zoom = false;
-                            //순서5-9. 그 외의 UI를 활성화한다.
-                            //playerUI1.SetActive(true);
-                            playerUI2.SetActive(true);
-                            sniperUI.SetActive(true);
-
-                            Camera.main.fieldOfView = 60;
-
-                            gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed *= 4;
-
-                            ////순서5-8. 조준 UI를 비활성화한다.
-                            zoomUI.SetActive(false);
-
-                            ////순서5-10. 조준 카메라를 비활성화하고 메인 카메라를 활성화한다.
-                            //mainCamera.SetActive(true);
-                            //mainCamera.transform.forward = zoomCamera.transform.forward;
-                            //mainCamera.GetComponent<CamRotate>().mX = zoomCamera.GetComponent<CamRotate>().mX;
-                            //mainCamera.GetComponent<CamRotate>().mY = zoomCamera.GetComponent<CamRotate>().mY;
-                            //zoomCamera.SetActive(false);
-
-                            //gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed;
+                            //순서3-2. 에네미에게 데미지를 준다.
+                            hitInfo.transform.gameObject.GetComponent<EnemyFSM>().GetDamaged(weaponPower);
                         }
                     }
-                    break;
-            }
-        }
 
-        //순서9-3. 1번을 누르면 노멀모드, 2번을 누르면 스나이퍼모드로 설정한다.
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            weaponModeText.text = "Normal";
-            if (weaponMode == WeaponMode.Sniper)
-            {
-                weaponPower -= 10;
-            }
-            weaponMode = WeaponMode.Normal;
-            rifleImage.SetActive(true);
-            sniperImage.SetActive(false);
-            if (zoom)
-            {
-                zoom = false;
-                //playerUI1.SetActive(true);
-                playerUI2.SetActive(true);
-                zoomUI.SetActive(false);
-
-                Camera.main.fieldOfView = 60;
-
-                gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed *= 4;
-            }
-            playerUI1.SetActive(true);
-            sniperUI.SetActive(false);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) 
-        {
-            weaponModeText.text = "Sniper";
-            if (weaponMode == WeaponMode.Normal)
-            {
-                weaponPower += 10;
-            }
-            weaponMode = WeaponMode.Sniper;
-            rifleImage.SetActive(false);
-            sniperImage.SetActive(true);
-
-            playerUI1.SetActive(false);
-            sniperUI.SetActive(true);
-        }
-
-
-        //순서2-1. 마우스 좌클릭을 누른다.
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (currentBullet > 0)
-            {
-                if (animator.GetFloat("MoveMotion") == 0)
-                {
-                    animator.SetTrigger("Attack");
                 }
-
-                //순서10-1. 총을 발사한다.
-                StartCoroutine(FireFlashEffect(0.05f));
-
-                //순서6-1. 총을 쏘면 총알이 줄어든다.
-                currentBullet--;
-
-                //순서2-2. 레이를 생성하고 발사 위치와 방향을 설정한다.
-                //if (Camera.main != null)
-                //{
-                ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-                //}
-                //else
-                //{
-                //    ray = new Ray(zoomCamera.transform.position, zoomCamera.transform.forward);
-                //}
-
-                //순서2-3. 레이가 부딫힌 대상의 정보를 저장할 수 있는 변수를 만든다.
-                RaycastHit hitInfo = new RaycastHit();
-
-                //순서2-4. 레이와 부딪힌 물체가 있으면 그 위치에 피격 효과를 만든다.
-                if (Physics.Raycast(ray, out hitInfo))
+                //순서6-2. 현재총알이 0발일 경우 총을 쏘는 대신에 재장전을 한다.
+                else if (!isReloading)
                 {
-                    hitEffect.transform.position = hitInfo.point;
-                    hitEffect.transform.forward = hitInfo.normal;
-                    particle.Play();
+                    StartCoroutine(ReloadBullet());
+                }
+            }
 
-                    //순서3-1. 레이가 에네미와 부딫힌다.
-                    if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            else if (Input.GetKeyDown(KeyCode.R))
+            {
+                photonView.RPC("SendMouseAction", RpcTarget.All, 4);
+                if (!isReloading)
+                {
+                    StartCoroutine(ReloadBullet());
+                }
+            }
+            else
+            {
+                photonView.RPC("SendMouseAction", RpcTarget.All, -1);
+            }
+            bulletText.text = currentBullet.ToString() + "/" + maxBullet.ToString();
+        }
+        else
+        {
+            if (GameManager.Instance.state != GameManager.GameState.Start)
+            {
+                return;
+            }
+
+            //순서1-1. 마우스 기능키를 누른다.
+            if (receivedMouseBtn == 1)
+            {
+                switch (weaponMode)
+                {
+                    //순서9-1. 노멀모드일 때 우클릭을 누르면 수류탄을 던진다.
+                    case WeaponMode.Normal:
+                        //순서1-2. 폭탄 오브젝트를 생성한다.
+                        GameObject bombGO = Instantiate(bomb);
+
+                        //순서1-3. 폭탄 오브젝트의 발사 위치를 설정한다.
+                        bombGO.transform.position = firePosition.transform.position;
+
+                        //순서1-4. 폭탄 오브젝트를 카메라방향으로 힘에 비례해서 발사한다.
+                        Rigidbody rigidbody = bombGO.GetComponent<Rigidbody>();
+                        //if (Camera.main != null)
+                        {
+                            direction = Camera.main.transform.forward;
+                        }
+                        //else
+                        //{
+                        //    direction = zoomCamera.transform.forward;
+                        //}
+                        rigidbody.AddForce(direction * power, ForceMode.Impulse);
+                        break;
+
+                    //순서9-2. 스나이퍼모드일 때 우클릭을 누르면 줌을 한다.
+                    case WeaponMode.Sniper:
+                        //순서5-1. 우클릭을 누른다.
+                        if (Input.GetMouseButtonDown(1))
+                        {
+                            if (!zoom)
+                            {
+                                //순서5-2. 줌 변수를 true로 한다.
+                                zoom = true;
+
+                                //순서5-4. 그 외의 UI를 비활성화 한다.
+                                //playerUI1.SetActive(false);
+                                playerUI2.SetActive(false);
+                                sniperUI.SetActive(false);
+
+                                Camera.main.fieldOfView = 15;
+
+                                gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed /= 4;
+
+                                ////순서5-3. 조준UI를 활성화한다.
+                                zoomUI.SetActive(true);
+
+                                ////순서5-5. 조준 카메라를 활성화하고 메인 카메라를 비활성화한다.
+                                //zoomCamera.SetActive(true);
+                                //zoomCamera.transform.forward = mainCamera.transform.forward;
+                                //zoomCamera.GetComponent<CamRotate>().mX = mainCamera.GetComponent<CamRotate>().mX;
+                                //zoomCamera.GetComponent<CamRotate>().mY = mainCamera.GetComponent<CamRotate>().mY;
+                                //mainCamera.SetActive(false);
+
+                                //gameObject.GetComponent<PlayerRotate>().rotateSpeed = zoomCamera.GetComponent<CamRotate>().rotateSpeed;
+                            }
+                            //순서5-6. 다시 우클릭을 누른다.
+                            else
+                            {
+                                //순서5-7. 줌 변수를 false로 한다.
+                                zoom = false;
+                                //순서5-9. 그 외의 UI를 활성화한다.
+                                //playerUI1.SetActive(true);
+                                playerUI2.SetActive(true);
+                                sniperUI.SetActive(true);
+
+                                Camera.main.fieldOfView = 60;
+
+                                gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed *= 4;
+
+                                ////순서5-8. 조준 UI를 비활성화한다.
+                                zoomUI.SetActive(false);
+
+                                ////순서5-10. 조준 카메라를 비활성화하고 메인 카메라를 활성화한다.
+                                //mainCamera.SetActive(true);
+                                //mainCamera.transform.forward = zoomCamera.transform.forward;
+                                //mainCamera.GetComponent<CamRotate>().mX = zoomCamera.GetComponent<CamRotate>().mX;
+                                //mainCamera.GetComponent<CamRotate>().mY = zoomCamera.GetComponent<CamRotate>().mY;
+                                //zoomCamera.SetActive(false);
+
+                                //gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            //순서9-3. 1번을 누르면 노멀모드, 2번을 누르면 스나이퍼모드로 설정한다.
+            if (receivedMouseBtn == 2)
+            {
+                weaponModeText.text = "Normal";
+                if (weaponMode == WeaponMode.Sniper)
+                {
+                    weaponPower -= 10;
+                }
+                weaponMode = WeaponMode.Normal;
+                rifleImage.SetActive(true);
+                sniperImage.SetActive(false);
+                if (zoom)
+                {
+                    zoom = false;
+                    //playerUI1.SetActive(true);
+                    playerUI2.SetActive(true);
+                    zoomUI.SetActive(false);
+
+                    Camera.main.fieldOfView = 60;
+
+                    gameObject.GetComponent<PlayerRotate>().rotateSpeed = mainCamera.GetComponent<CamRotate>().rotateSpeed *= 4;
+                }
+                playerUI1.SetActive(true);
+                sniperUI.SetActive(false);
+            }
+            if (receivedMouseBtn == 3)
+            {
+                weaponModeText.text = "Sniper";
+                if (weaponMode == WeaponMode.Normal)
+                {
+                    weaponPower += 10;
+                }
+                weaponMode = WeaponMode.Sniper;
+                rifleImage.SetActive(false);
+                sniperImage.SetActive(true);
+
+                playerUI1.SetActive(false);
+                sniperUI.SetActive(true);
+            }
+
+            //순서2-1. 마우스 좌클릭을 누른다.
+            if (receivedMouseBtn == 0)
+            {
+                if (currentBullet > 0)
+                {
+                    if (animator.GetFloat("MoveMotion") == 0)
                     {
-                        //순서3-2. 에네미에게 데미지를 준다.
-                        hitInfo.transform.gameObject.GetComponent<EnemyFSM>().GetDamaged(weaponPower);
+                        animator.SetTrigger("Attack");
                     }
+
+                    //순서10-1. 총을 발사한다.
+                    StartCoroutine(FireFlashEffect(0.05f));
+
+                    //순서6-1. 총을 쏘면 총알이 줄어든다.
+                    currentBullet--;
+
+                    //순서2-2. 레이를 생성하고 발사 위치와 방향을 설정한다.
+                    //if (Camera.main != null)
+                    //{
+                    ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+                    //}
+                    //else
+                    //{
+                    //    ray = new Ray(zoomCamera.transform.position, zoomCamera.transform.forward);
+                    //}
+
+                    //순서2-3. 레이가 부딫힌 대상의 정보를 저장할 수 있는 변수를 만든다.
+                    RaycastHit hitInfo = new RaycastHit();
+
+                    //순서2-4. 레이와 부딪힌 물체가 있으면 그 위치에 피격 효과를 만든다.
+                    if (Physics.Raycast(ray, out hitInfo))
+                    {
+                        hitEffect.transform.position = hitInfo.point;
+                        hitEffect.transform.forward = hitInfo.normal;
+                        particle.Play();
+
+                        //순서3-1. 레이가 에네미와 부딫힌다.
+                        if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+                        {
+                            //순서3-2. 에네미에게 데미지를 준다.
+                            hitInfo.transform.gameObject.GetComponent<EnemyFSM>().GetDamaged(weaponPower);
+                        }
+                    }
+
                 }
-
+                //순서6-2. 현재총알이 0발일 경우 총을 쏘는 대신에 재장전을 한다.
+                else if (!isReloading)
+                {
+                    StartCoroutine(ReloadBullet());
+                }
             }
-            //순서6-2. 현재총알이 0발일 경우 총을 쏘는 대신에 재장전을 한다.
-            else if (!isReloading)
+
+            if (receivedMouseBtn == 4)
             {
-                StartCoroutine(ReloadBullet());
+                if (!isReloading)
+                {
+                    StartCoroutine(ReloadBullet());
+                }
             }
+
+            bulletText.text = currentBullet.ToString() + "/" + maxBullet.ToString();
         }
+    }
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            if (!isReloading)
-            {
-                StartCoroutine(ReloadBullet());
-            }
-        }
+    int mouseAction = -1;
 
-
-        bulletText.text = currentBullet.ToString() + "/" + maxBullet.ToString();
+    [PunRPC]
+    void SendMouseAction(int input)
+    {
+        mouseAction = input;
     }
 
     IEnumerator ReloadBullet()
@@ -357,5 +576,18 @@ public class PlayerFire : MonoBehaviour
         fireFlashEffect[rand].SetActive(true);
         yield return new WaitForSeconds(duration);
         fireFlashEffect[rand].SetActive(false);
+    }
+
+    int receivedMouseBtn = -1;
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(mouseAction);
+        }
+        else if (stream.IsReading)
+        {
+            receivedMouseBtn = (int)stream.ReceiveNext();
+        }
     }
 }

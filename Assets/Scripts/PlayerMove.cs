@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
@@ -50,7 +52,7 @@ using UnityEngine.UI;
 
 
 
-public class PlayerMove : MonoBehaviour
+public class PlayerMove : MonoBehaviour, IPunObservable
 {
     //속성 : 이동속도 
     public float speed = 10.0f;
@@ -85,6 +87,8 @@ public class PlayerMove : MonoBehaviour
     //속성10 : 모델링 오브젝트의 애니메이터
     Animator animator;
 
+    PhotonView photonView;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -92,75 +96,86 @@ public class PlayerMove : MonoBehaviour
         maxHealthPoint = healthPoint;
 
         animator = GetComponentInChildren<Animator>();
+
+        photonView = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //순서5-1. HP를 슬라이더에 적용한다.
-        healthPointSlider.value = (float)healthPoint / (float)maxHealthPoint;
-
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (photonView.IsMine)
         {
-            GameManager.Instance.OpenOptionWindow();
-        }
+            //순서5-1. HP를 슬라이더에 적용한다.
+            healthPointSlider.value = (float)healthPoint / (float)maxHealthPoint;
 
-        if (GameManager.Instance.state != GameManager.GameState.Start)
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                GameManager.Instance.OpenOptionWindow();
+            }
+
+            if (GameManager.Instance.state != GameManager.GameState.Start)
+            {
+                return;
+            }
+
+            //순서1-1. 사용자의 입력을 받는다.
+            float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
+
+            //순서3-1. 점프 중 착지 했을 때 점프 상태를 false로 설정한다.
+            if (isJumping && controller.collisionFlags == CollisionFlags.Below)
+            {
+                isJumping = false;
+            }
+            //순서3-2. 바닥에 있을 경우 수직속도를 0으로 한다.
+            else if (controller.collisionFlags == CollisionFlags.Below)
+            {
+                yVelocity = 0;
+            }
+            //순서2-3. Space를 누르면 점프력에 따라 수직으로 이동한다.
+            //순서3-3. 점프를 했을 때 점프상태를 확인해서 점프 중이면 동작하지 않도록 한다.
+            if (Input.GetButtonDown("Jump") && !isJumping)
+            {
+                yVelocity = jumpPower;
+                //순서3-4. 점프를 했을 때 점프 상태를 true로 설정한다.
+                isJumping = true;
+            }
+
+
+            //순서1-2. 이동방향을 설정한다.
+            //if(Camera.main != null)
+            {
+                direction = Camera.main.transform.TransformDirection(h, 0, v);
+
+                //속성10 : 모델링 오브젝트의 애니메이터
+                animator.SetFloat("MoveMotion", direction.magnitude);
+            }
+            //else
+            //{
+            //    direction = zoomCamera.transform.TransformDirection(h, 0, v);
+
+            //    //속성10 : 모델링 오브젝트의 애니메이터
+            //    animator.SetFloat("MoveMotion", direction.magnitude);
+            //}
+
+            //순서1-3. 이동속도에 따라 이동방향으로 플레이어를 이동시킨다.
+            //transform.position += speed * Time.deltaTime * direction;
+
+
+
+            //순서2-1. 캐릭터의 수직 속도에 중력을 적용한다.
+            yVelocity += gravity * Time.deltaTime;
+            direction.y = yVelocity;
+
+            //순서2-2. 캐릭터 컨트롤러로 나를 이동시키고 싶다.
+            controller.Move(speed * Time.deltaTime * direction);
+
+        }
+        else
         {
-            return;
+            transform.position = Vector3.Lerp(transform.position, receivedPos, Time.deltaTime * 20);
+            transform.rotation = Quaternion.Lerp(transform.rotation, receivedRot, Time.deltaTime * 20);
         }
-
-        //순서1-1. 사용자의 입력을 받는다.
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-
-        //순서3-1. 점프 중 착지 했을 때 점프 상태를 false로 설정한다.
-        if (isJumping && controller.collisionFlags == CollisionFlags.Below)
-        {
-            isJumping = false;
-        }
-        //순서3-2. 바닥에 있을 경우 수직속도를 0으로 한다.
-        else if (controller.collisionFlags == CollisionFlags.Below)
-        {
-            yVelocity = 0;
-        }
-        //순서2-3. Space를 누르면 점프력에 따라 수직으로 이동한다.
-        //순서3-3. 점프를 했을 때 점프상태를 확인해서 점프 중이면 동작하지 않도록 한다.
-        if (Input.GetButtonDown("Jump") && !isJumping)
-        {
-            yVelocity = jumpPower;
-            //순서3-4. 점프를 했을 때 점프 상태를 true로 설정한다.
-            isJumping = true;
-        }
-
-
-        //순서1-2. 이동방향을 설정한다.
-        //if(Camera.main != null)
-        {
-            direction = Camera.main.transform.TransformDirection(h, 0, v);
-
-            //속성10 : 모델링 오브젝트의 애니메이터
-            animator.SetFloat("MoveMotion", direction.magnitude);
-        }
-        //else
-        //{
-        //    direction = zoomCamera.transform.TransformDirection(h, 0, v);
-
-        //    //속성10 : 모델링 오브젝트의 애니메이터
-        //    animator.SetFloat("MoveMotion", direction.magnitude);
-        //}
-
-        //순서1-3. 이동속도에 따라 이동방향으로 플레이어를 이동시킨다.
-        //transform.position += speed * Time.deltaTime * direction;
-
-
-
-        //순서2-1. 캐릭터의 수직 속도에 중력을 적용한다.
-        yVelocity += gravity * Time.deltaTime;
-        direction.y = yVelocity;
-
-        //순서2-2. 캐릭터 컨트롤러로 나를 이동시키고 싶다.
-        controller.Move(speed * Time.deltaTime * direction);
     }
 
     //순서6-1. 적의 공격을 받는다.
@@ -222,6 +237,26 @@ public class PlayerMove : MonoBehaviour
             healthPoint += (int)((float)maxHealthPoint * 0.25);
             Mathf.Clamp(healthPoint, 0, maxHealthPoint);
             GetComponent<PlayerFire>().maxBullet += 100;
+        }
+    }
+
+    Vector3 receivedPos;
+    Quaternion receivedRot;
+
+    // 목적 : 네트워크의 동기화를 위해 PhotonStream(플레이어의 position, rotation)을 보내고 받는다.
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        //데이터 전송
+        if(stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        //데이터 수신
+        else if(stream.IsReading)
+        {
+            receivedPos = (Vector3)stream.ReceiveNext();
+            receivedRot = (Quaternion)stream.ReceiveNext();
         }
     }
 }

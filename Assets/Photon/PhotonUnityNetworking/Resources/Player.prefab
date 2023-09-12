@@ -2439,7 +2439,6 @@ GameObject:
   - component: {fileID: 6017615523493505369}
   - component: {fileID: 3285401568171530915}
   - component: {fileID: 7056412163457712611}
-  - component: {fileID: 1982591318926385072}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -2545,7 +2544,7 @@ MonoBehaviour:
   speed: 10
   jumpPower: 3
   isJumping: 0
-  healthPoint: 50
+  healthPoint: 20
   healthPointSlider: {fileID: 6502730826341993679}
   hitImage: {fileID: 4576180569732940341}
   endTime: 3
@@ -2630,44 +2629,10 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 1982591318926385072}
+  ObservedComponents: []
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &1982591318926385072
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6307744105025054407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8efc6b1d64977384eb3405357896c656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_PositionModel:
-    SynchronizeEnabled: 1
-    TeleportEnabled: 1
-    TeleportIfDistanceGreaterThan: 3
-    InterpolateOption: 2
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 1
-    ExtrapolateOption: 0
-    ExtrapolateSpeed: 1
-    ExtrapolateIncludingRoundTripTime: 1
-    ExtrapolateNumberOfStoredPositions: 1
-  m_RotationModel:
-    SynchronizeEnabled: 1
-    InterpolateOption: 1
-    InterpolateRotateTowardsSpeed: 180
-    InterpolateLerpSpeed: 5
-  m_ScaleModel:
-    SynchronizeEnabled: 0
-    InterpolateOption: 0
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 0
 --- !u!1 &6330338890570428223
 GameObject:
   m_ObjectHideFlags: 0

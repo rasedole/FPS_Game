@@ -2720,6 +2720,7 @@ MonoBehaviour:
   optionUI: {fileID: 3467939581010225535}
   playerPhotonView: {fileID: 7056412163457712611, guid: 88b71a8748cb3c44b89301ec8ed3a50f, type: 3}
   enemyManagers: {fileID: 1427556096}
+  spawnPoints: []
 --- !u!4 &839758802
 Transform:
   m_ObjectHideFlags: 0
